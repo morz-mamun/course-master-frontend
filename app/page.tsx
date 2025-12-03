@@ -1,183 +1,136 @@
-"use client"
-
-import { useState } from "react"
-import Link from "next/link"
-import { useGetCoursesQuery } from "@/src/services/api"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { GraduationCap, BookOpen, Users, Award, ArrowRight, Sparkles } from "lucide-react";
 
 export default function HomePage() {
-  const [search, setSearch] = useState("")
-  const [category, setCategory] = useState("")
-  const [sort, setSort] = useState("")
-  const [page, setPage] = useState(1)
-
-  const { data, isLoading } = useGetCoursesQuery({
-    search,
-    category,
-    sort,
-    page,
-    limit: 12,
-  })
-
-  const courses = data?.courses || []
-  const totalPages = data ? Math.ceil(data.totalCount / 12) : 1
-
   return (
-    <div className="min-h-screen bg-linear-to-b from-background to-muted">
-      {/* Header */}
-      <header className="border-b bg-background sticky top-0 z-50">
-        <div className="container max-w-7xl mx-auto flex items-center justify-between py-4">
-          <h1 className="text-2xl font-bold">CourseMaster</h1>
-          <nav className="flex items-center gap-6">
-            <Link href="/" className="hover:text-primary transition-colors">
-              Courses
-            </Link>
-            <Link href="/dashboard" className="hover:text-primary transition-colors">
-              Dashboard
-            </Link>
-            <Link href="/auth" className="hover:text-primary transition-colors">
-              Sign In
-            </Link>
-          </nav>
-        </div>
-      </header>
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-primary/10 py-20 md:py-32">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-6 animate-fade-in">
+              <Sparkles className="size-4" />
+              <span>Welcome to the Future of Learning</span>
+            </div>
 
-      <main className="container max-w-7xl mx-auto py-12">
-        {/* Hero */}
-        <section className="mb-12">
-          <h2 className="text-4xl font-bold mb-2">Explore Our Courses</h2>
-          <p className="text-muted-foreground text-lg">Learn from industry experts and advance your skills</p>
-        </section>
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+              Master New Skills with
+              <span className="block bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                Course Master
+              </span>
+            </h1>
 
-        {/* Filters */}
-        <div className="bg-card border rounded-lg p-6 mb-8">
-          <h3 className="text-lg font-semibold mb-4">Filter Courses</h3>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-            <Input
-              placeholder="Search courses..."
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value)
-                setPage(1)
-              }}
-            />
-            <select
-              value={category}
-              onChange={(e) => {
-                setCategory(e.target.value)
-                setPage(1)
-              }}
-              className="px-4 py-2 border border-input rounded-md bg-background"
-            >
-              <option value="">All Categories</option>
-              <option value="programming">Programming</option>
-              <option value="design">Design</option>
-              <option value="business">Business</option>
-            </select>
-            <select
-              value={sort}
-              onChange={(e) => {
-                setSort(e.target.value)
-                setPage(1)
-              }}
-              className="px-4 py-2 border border-input rounded-md bg-background"
-            >
-              <option value="">Sort By</option>
-              <option value="price_asc">Price: Low to High</option>
-              <option value="price_desc">Price: High to Low</option>
-            </select>
-            <Button
-              onClick={() => {
-                setSearch("")
-                setCategory("")
-                setSort("")
-                setPage(1)
-              }}
-              variant="outline"
-            >
-              Reset
-            </Button>
+            <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+              Join thousands of learners worldwide. Access expert-led courses, track your progress,
+              and achieve your learning goals with our comprehensive platform.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/courses">
+                <Button size="lg" className="gap-2 group">
+                  Browse Courses
+                  <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
+              <Link href="/register">
+                <Button size="lg" variant="outline">
+                  Get Started Free
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
 
-        {/* Courses Grid */}
-        {isLoading ? (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground">Loading courses...</p>
-          </div>
-        ) : courses.length > 0 ? (
-          <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-              {courses.map((course: any) => (
-                <Card key={course.id} className="hover:shadow-lg transition-shadow">
-                  <div className="h-40 bg-muted rounded-t-lg overflow-hidden">
-                    <img
-                      src={course.imageUrl || "/placeholder.svg?height=160&width=400"}
-                      alt={course.title}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <CardHeader>
-                    <CardTitle className="line-clamp-2">{course.title}</CardTitle>
-                    <CardDescription className="line-clamp-2">{course.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-center justify-between mb-4">
-                      <span className="text-2xl font-bold text-primary">${course.price}</span>
-                      <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">{course.category}</span>
-                    </div>
-                    <Link href={`/courses/${course.id}`} className="w-full block">
-                      <Button className="w-full">View Details</Button>
-                    </Link>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+        {/* Decorative elements */}
+        <div className="absolute top-1/4 left-10 w-72 h-72 bg-primary/20 rounded-full blur-3xl opacity-20" />
+        <div className="absolute bottom-1/4 right-10 w-96 h-96 bg-primary/20 rounded-full blur-3xl opacity-20" />
+      </section>
 
-            {/* Pagination */}
-            <div className="flex items-center justify-center gap-2 mt-8">
-              <Button onClick={() => setPage(Math.max(1, page - 1))} disabled={page === 1} variant="outline">
-                Previous
-              </Button>
-              {Array.from({ length: Math.min(5, totalPages) }).map((_, i) => {
-                const pageNum = Math.max(1, page - 2) + i
-                if (pageNum > totalPages) return null
-                return (
-                  <Button
-                    key={pageNum}
-                    onClick={() => setPage(pageNum)}
-                    variant={page === pageNum ? "default" : "outline"}
-                  >
-                    {pageNum}
-                  </Button>
-                )
-              })}
-              <Button
-                onClick={() => setPage(Math.min(totalPages, page + 1))}
-                disabled={page === totalPages}
-                variant="outline"
-              >
-                Next
-              </Button>
-            </div>
-          </>
-        ) : (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground mb-4">No courses found</p>
-            <Button
-              onClick={() => {
-                setSearch("")
-                setCategory("")
-                setSort("")
-              }}
-            >
-              Clear Filters
-            </Button>
+      {/* Features Section */}
+      <section className="py-20 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Why Choose Course Master?
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Everything you need to succeed in your learning journey
+            </p>
           </div>
-        )}
-      </main>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+            <Card className="border-2 hover:border-primary/50 transition-colors">
+              <CardHeader>
+                <div className="size-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                  <BookOpen className="size-6 text-primary" />
+                </div>
+                <CardTitle>Expert Content</CardTitle>
+                <CardDescription>
+                  Learn from industry professionals with real-world experience
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card className="border-2 hover:border-primary/50 transition-colors">
+              <CardHeader>
+                <div className="size-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                  <Users className="size-6 text-primary" />
+                </div>
+                <CardTitle>Active Community</CardTitle>
+                <CardDescription>
+                  Join a vibrant community of learners and mentors
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card className="border-2 hover:border-primary/50 transition-colors">
+              <CardHeader>
+                <div className="size-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                  <Award className="size-6 text-primary" />
+                </div>
+                <CardTitle>Track Progress</CardTitle>
+                <CardDescription>
+                  Monitor your learning journey with detailed analytics
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card className="border-2 hover:border-primary/50 transition-colors">
+              <CardHeader>
+                <div className="size-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                  <GraduationCap className="size-6 text-primary" />
+                </div>
+                <CardTitle>Certificates</CardTitle>
+                <CardDescription>
+                  Earn recognized certificates upon course completion
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 bg-gradient-to-br from-primary/10 to-background">
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl mx-auto text-center">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Ready to Start Learning?
+            </h2>
+            <p className="text-lg text-muted-foreground mb-8">
+              Join Course Master today and unlock your potential
+            </p>
+            <Link href="/register">
+              <Button size="lg" className="gap-2">
+                Create Free Account
+                <ArrowRight className="size-4" />
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
     </div>
-  )
+  );
 }
