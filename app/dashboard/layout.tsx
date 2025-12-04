@@ -35,7 +35,7 @@ export default function DashboardLayout({
         <SidebarProvider defaultOpen={true}>
             <StudentSidebar />
             <SidebarInset>
-                <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between gap-2 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4">
+                <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between gap-2 border-b bg-background px-4">
                     <div className="flex items-center gap-2">
                         <SidebarTrigger />
                     </div>
@@ -67,7 +67,7 @@ export default function DashboardLayout({
                         </Button>
                     </div>
                 </header>
-                <div className="flex flex-1 flex-col overflow-auto max-w-[calc(100%-var(--sidebar-width))] ml-[var(--sidebar-width)]">
+                <div className='flex flex-1 flex-col'>
                     {children}
                 </div>
             </SidebarInset>

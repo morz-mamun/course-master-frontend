@@ -12,7 +12,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import ProgressBar from '@/components/ProgressBar';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import EmptyState from '@/components/EmptyState';
 import { BookOpen, ArrowRight, GraduationCap, TrendingUp, Clock, CheckCircle2 } from 'lucide-react';
@@ -156,26 +155,6 @@ function DashboardContent() {
                                         </div>
                                     </CardHeader>
                                 </Card>
-
-                                <Card
-                                    className="cursor-pointer hover:shadow-lg transition-all hover:scale-[1.02]"
-                                    onClick={() => router.push('/courses')}
-                                >
-                                    <CardHeader className="pb-3">
-                                        <div className="flex items-center gap-3">
-                                            <div className="p-2 rounded-lg bg-primary/10">
-                                                <GraduationCap className="h-5 w-5 text-primary" />
-                                            </div>
-                                            <div className="flex-1">
-                                                <CardTitle className="text-base">Explore Courses</CardTitle>
-                                                <CardDescription className="text-xs mt-1">
-                                                    Discover new courses to learn
-                                                </CardDescription>
-                                            </div>
-                                        </div>
-                                    </CardHeader>
-                                </Card>
-
                                 <Card
                                     className="cursor-pointer hover:shadow-lg transition-all hover:scale-[1.02]"
                                     onClick={() => {

@@ -124,83 +124,158 @@ export default function LearnPage() {
     const totalLessons = progress?.totalLessons || course.syllabus?.length || 0;
 
     return (
-        <div className="flex-1 p-4 md:p-6 lg:p-8">
-            <div className="max-w-screen-2xl mx-auto space-y-6">
-                {/* Course Header */}
-                <div className="space-y-4">
-                    <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1">
-                            <h1 className="text-2xl md:text-3xl font-bold mb-2">{course.title}</h1>
-                            <p className="text-muted-foreground">{course.description}</p>
-                        </div>
-                    </div>
-                </div>
-
+        <div className="p-4 md:p-6 lg:p-8">
+            <div className="max-w-screen-xl mx-auto space-y-6">
                 {/* Main Content Grid */}
-                <div className="grid lg:grid-cols-3 gap-6">
-                    {/* Syllabus - left Sidebar */}
-                    <div className="lg:col-span-1">
-                        <Card className="sticky top-24">
-                            <CardHeader className="pb-4">
-                                <CardTitle>Course Syllabus</CardTitle>
-                                <CardDescription className="mb-3">
-                                    {completedLessons} of {totalLessons} lessons completed
-                                </CardDescription>
-                                <div className="space-y-2">
-                                    <div className="flex items-center justify-between text-sm">
-                                        <span className="text-muted-foreground">Progress</span>
-                                        <span className="font-semibold">{progressPercentage}%</span>
+                <div className="grid lg:grid-cols-10 gap-6">
+                    {/* Left Sidebar - Syllabus & Materials - Sticky */}
+                    <div className="lg:col-span-3">
+                        <div className="sticky top-24 space-y-4">
+                            {/* Course Header */}
+                            <div className="space-y-4">
+                                <div className="flex items-start justify-between gap-4">
+                                    <div className="flex-1">
+                                        <h1 className="text-2xl md:text-3xl font-bold mb-2">{course.title}</h1>
+                                        <p className="text-muted-foreground">{course.description}</p>
                                     </div>
-                                    <Progress value={progressPercentage} className="h-2" />
                                 </div>
-                            </CardHeader>
-                            <CardContent className="p-0">
-                                <div className="max-h-[600px] overflow-y-auto">
-                                    {course?.syllabus?.map((lesson, index) => {
-                                        const isCompleted = isLessonCompleted(lesson.lessonId);
-                                        const isCurrent = currentLesson?.lessonId === lesson.lessonId;
+                            </div>
+                            {/* Syllabus Card - Compact */}
+                            <Card>
+                                <CardHeader className="pb-3">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <CardTitle className="text-base">Syllabus</CardTitle>
+                                        <Badge variant="secondary" className="text-xs">
+                                            {completedLessons}/{totalLessons}
+                                        </Badge>
+                                    </div>
+                                    <Progress value={progressPercentage} className="h-1.5" />
+                                </CardHeader>
+                                <CardContent className="p-0">
+                                    <div className="max-h-[300px] overflow-y-auto">
+                                        {course?.syllabus?.map((lesson, index) => {
+                                            const isCompleted = isLessonCompleted(lesson.lessonId);
+                                            const isCurrent = currentLesson?.lessonId === lesson.lessonId;
 
-                                        return (
-                                            <button
-                                                key={lesson.lessonId}
-                                                onClick={() => setCurrentLesson(lesson)}
-                                                className={cn(
-                                                    "w-full text-left p-4 transition-colors flex items-start gap-3 border-b last:border-b-0",
-                                                    isCurrent
-                                                        ? "bg-primary/10 border-l-4 border-l-primary"
-                                                        : "hover:bg-muted"
-                                                )}
-                                            >
-                                                <div className="mt-0.5">
-                                                    {isCompleted ? (
-                                                        <CheckCircle className="size-5 text-green-500" />
-                                                    ) : (
-                                                        <div className="size-5 rounded-full border-2 border-muted-foreground flex items-center justify-center">
-                                                            <span className="text-xs font-medium">{index + 1}</span>
-                                                        </div>
+                                            return (
+                                                <button
+                                                    key={lesson.lessonId}
+                                                    onClick={() => setCurrentLesson(lesson)}
+                                                    className={cn(
+                                                        "w-full text-left px-4 py-2.5 transition-colors flex items-center gap-2 border-b last:border-b-0",
+                                                        isCurrent
+                                                            ? "bg-primary/10 border-l-2 border-l-primary"
+                                                            : "hover:bg-muted"
                                                     )}
-                                                </div>
-                                                <div className="flex-1 min-w-0">
-                                                    <div className={cn(
-                                                        "font-medium text-sm mb-1",
-                                                        isCurrent && "text-primary"
-                                                    )}>
-                                                        {lesson.title}
+                                                >
+                                                    <div className="shrink-0">
+                                                        {isCompleted ? (
+                                                            <CheckCircle className="size-4 text-green-500" />
+                                                        ) : (
+                                                            <div className="size-4 rounded-full border border-muted-foreground flex items-center justify-center">
+                                                                <span className="text-[10px] font-medium">{index + 1}</span>
+                                                            </div>
+                                                        )}
                                                     </div>
-                                                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                                        <Clock className="size-3" />
-                                                        {lesson.duration} min
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className={cn(
+                                                            "text-xs font-medium truncate",
+                                                            isCurrent && "text-primary"
+                                                        )}>
+                                                            {lesson.title}
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                            </CardContent>
-                        </Card>
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            {/* Lesson Materials Card */}
+                            {currentLesson && (
+                                <Card className="border-primary/20">
+                                    <CardHeader className="pb-3">
+                                        <CardTitle className="text-base flex items-center gap-2">
+                                            <FileText className="size-4 text-primary" />
+                                            Materials
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="space-y-3">
+                                        {isLessonCompleted(currentLesson.lessonId) ? (
+                                            <>
+                                                {materials?.assignments?.length > 0 && (
+                                                    <div className="space-y-2">
+                                                        <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                                                            <FileText className="size-3" />
+                                                            Assignments ({materials.assignments.length})
+                                                        </div>
+                                                        {materials.assignments.map((assignment) => (
+                                                            <div
+                                                                key={assignment._id}
+                                                                className="p-2 rounded-md bg-muted/50 hover:bg-muted transition-colors"
+                                                            >
+                                                                <div className="text-xs font-medium truncate">
+                                                                    {assignment.title}
+                                                                </div>
+                                                                <div className="text-[10px] text-muted-foreground mt-0.5">
+                                                                    {assignment.studentSubmission?.score !== undefined
+                                                                        ? `Score: ${assignment.studentSubmission.score}/${assignment.maxScore}`
+                                                                        : assignment.studentSubmission
+                                                                            ? 'Pending Review'
+                                                                            : 'Not Submitted'}
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                                {materials?.quizzes?.length > 0 && (
+                                                    <div className="space-y-2">
+                                                        <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                                                            <HelpCircle className="size-3" />
+                                                            Quizzes ({materials.quizzes.length})
+                                                        </div>
+                                                        {materials.quizzes.map((quiz) => (
+                                                            <div
+                                                                key={quiz._id}
+                                                                className="p-2 rounded-md bg-muted/50 hover:bg-muted transition-colors"
+                                                            >
+                                                                <div className="text-xs font-medium truncate">
+                                                                    {quiz.title}
+                                                                </div>
+                                                                <div className="text-[10px] text-muted-foreground mt-0.5">
+                                                                    {quiz.questions?.length || 0} questions
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                                {!materials.assignments?.length && !materials.quizzes?.length && (
+                                                    <div className="text-center py-4">
+                                                        <AlertCircle className="size-8 mx-auto mb-2 text-muted-foreground" />
+                                                        <p className="text-xs text-muted-foreground">
+                                                            No materials available
+                                                        </p>
+                                                    </div>
+                                                )}
+                                            </>
+                                        ) : (
+                                            <div className="text-center py-4">
+                                                <Lock className="size-8 mx-auto mb-2 text-muted-foreground" />
+                                                <p className="text-xs text-muted-foreground">
+                                                    Complete lesson to unlock
+                                                </p>
+                                            </div>
+                                        )}
+                                    </CardContent>
+                                </Card>
+                            )}
+                        </div>
+
                     </div>
-                    {/* Video and Content - Right Side */}
-                    <div className="lg:col-span-2 space-y-6">
+
+                    {/* Video and Content - Right Side - Scrollable */}
+                    <div className="lg:col-span-7 space-y-6">
                         {currentLesson ? (
                             <>
                                 {/* Video Player */}
