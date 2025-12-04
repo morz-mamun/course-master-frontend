@@ -89,18 +89,22 @@ function DashboardContent() {
     }
 
     return (
-        <div className="flex-1 p-4 md:p-6 lg:p-8">
-            <div className="max-w-7xl mx-auto space-y-8">
-                {/* Welcome Section */}
-                <div className="space-y-1">
-                    <h1 className="text-2xl md:text-3xl font-bold">
-                        Welcome back, {user?.name}! 👋
-                    </h1>
-                    <p className="text-sm md:text-base text-muted-foreground">
-                        Continue your learning journey and track your progress
-                    </p>
+        <div className="bg-background">
+            <header className="sticky top-0 z-50 w-full border-b border-border bg-card">
+                <div className="container mx-auto flex h-16 items-center justify-between px-4">
+                    <div className="flex items-center gap-6">
+                        <div className="flex flex-col">
+                            <h2 className="text-xl font-bold">Student Dashboard</h2>
+                            <p>
+                                <span> Welcome back, {user?.name}! 👋</span>
+                                <span>Continue your learning journey and track your progress</span>
+                            </p>
+                        </div>
+                    </div>
                 </div>
+            </header>
 
+            <main className="container mx-auto px-4 py-8 space-y-8">
                 {enrolledCourses.length === 0 ? (
                     <EmptyState
                         icon={<BookOpen className="size-16" />}
@@ -210,7 +214,7 @@ function DashboardContent() {
                         </div>
                     </>
                 )}
-            </div>
+            </main>
         </div>
     );
 }

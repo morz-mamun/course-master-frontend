@@ -13,6 +13,7 @@ import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/s
 import { Button } from '@/components/ui/button';
 import { GraduationCap, LogOut, User } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import StudentDashboardHeader from '@/components/shared/StudentDashboardHeader';
 
 export default function DashboardLayout({
     children,
@@ -32,45 +33,16 @@ export default function DashboardLayout({
     };
 
     return (
-        <SidebarProvider defaultOpen={true}>
-            <StudentSidebar />
-            <SidebarInset>
-                <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between gap-2 border-b bg-background px-4">
-                    <div className="flex items-center gap-2">
-                        <SidebarTrigger />
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                        {/* Browse Courses Link */}
-                        <Link href="/courses">
-                            <Button variant="ghost" size="sm" className="gap-2 hidden sm:flex">
-                                <GraduationCap className="h-4 w-4" />
-                                Browse Courses
-                            </Button>
-                        </Link>
-
-                        {/* User Info */}
-                        <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-md bg-muted/50">
-                            <User className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-sm font-medium">{user?.name || 'Student'}</span>
-                        </div>
-
-                        {/* Logout Button */}
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={handleLogout}
-                            className="gap-2"
-                        >
-                            <LogOut className="h-4 w-4" />
-                            <span className="hidden sm:inline">Logout</span>
-                        </Button>
-                    </div>
-                </header>
-                <div className='flex flex-1 flex-col'>
-                    {children}
+        <SidebarProvider>
+            <div className="w-[100%] border flex min-h-screen flex-col">
+                <div className="flex flex-1">
+                    <StudentSidebar />
+                    <main className="flex-1">
+                        <StudentDashboardHeader />
+                        {children}
+                    </main>
                 </div>
-            </SidebarInset>
-        </SidebarProvider>
+            </div>
+        </SidebarProvider >
     );
 }
