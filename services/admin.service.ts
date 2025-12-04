@@ -3,7 +3,7 @@
  * API service for admin-specific operations
  */
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+import api from '@/lib/api';
 
 interface DashboardStats {
     totalCourses: number;
@@ -13,26 +13,15 @@ interface DashboardStats {
 }
 
 class AdminService {
-    private getAuthHeader() {
-        const token = localStorage.getItem('token');
-        return {
-            'Content-Type': 'application/json',
-            ...(token && { Authorization: `Bearer ${token}` }),
-        };
-    }
-
     async getDashboardStats(): Promise<DashboardStats> {
         try {
-            const response = await fetch(`${API_URL}/admin/stats`, {
-                headers: this.getAuthHeader(),
+            const response = await api.get<DashboardStats>('/admin/stats', {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                },
             });
-
-            if (!response.ok) {
-                throw new Error('Failed to fetch dashboard stats');
-            }
-
-            const data = await response.json();
-            return data;
+            console.log('admin stats', response.data);
+            return response.data;
         } catch (error) {
             console.error('Error fetching dashboard stats:', error);
             // Return default values if API fails
@@ -43,6 +32,16 @@ class AdminService {
                 totalAssignments: 0,
             };
         }
+    }
+
+    async gradeAssignment(data: {
+        assignmentId: string;
+        submissionId: string;
+        score: number;
+        feedback?: string;
+    }): Promise<any> {
+        const response = await api.post('/admin/grade', data);
+        return response.data;
     }
 }
 

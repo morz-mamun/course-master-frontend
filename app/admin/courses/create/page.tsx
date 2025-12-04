@@ -8,7 +8,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCourses } from '@/contexts/CourseContext';
-import ProtectedRoute from '@/components/ProtectedRoute';
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
@@ -317,9 +317,5 @@ function CreateCourseContent() {
 }
 
 export default function CreateCoursePage() {
-    return (
-        <ProtectedRoute requiredRole="admin">
-            <CreateCourseContent />
-        </ProtectedRoute>
-    );
+    return <CreateCourseContent />;
 }

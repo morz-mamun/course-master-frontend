@@ -9,7 +9,7 @@ import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCourses } from '@/contexts/CourseContext';
 import { useAuth } from '@/contexts/AuthContext';
-import ProtectedRoute from '@/components/ProtectedRoute';
+
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import ProgressBar from '@/components/ProgressBar';
@@ -121,9 +121,5 @@ function DashboardContent() {
 }
 
 export default function DashboardPage() {
-    return (
-        <ProtectedRoute requiredRole="student">
-            <DashboardContent />
-        </ProtectedRoute>
-    );
+    return <DashboardContent />;
 }

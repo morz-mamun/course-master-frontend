@@ -5,57 +5,133 @@
  * View and manage student enrollments
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { getAllEnrollments } from '@/services/student.service';
-import ProtectedRoute from '@/components/ProtectedRoute';
+import { getAllCourses } from '@/services/course.service';
+
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import EmptyState from '@/components/EmptyState';
-import { Users, Calendar } from 'lucide-react';
+import { Users, Calendar, Filter } from 'lucide-react';
 
 function AdminEnrollmentsContent() {
     const [enrollments, setEnrollments] = useState<any[]>([]);
+    const [courses, setCourses] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [selectedCourse, setSelectedCourse] = useState<string>('');
+    const [selectedBatch, setSelectedBatch] = useState<string>('');
 
     useEffect(() => {
-        const loadEnrollments = async () => {
+        const loadData = async () => {
             try {
-                const data = await getAllEnrollments();
-                setEnrollments(data.enrollments);
+                const [enrollmentsData, coursesData] = await Promise.all([
+                    getAllEnrollments(),
+                    getAllCourses({ page: 1, limit: 100 })
+                ]);
+                setEnrollments(enrollmentsData.enrollments);
+                setCourses(coursesData.data);
             } catch (error) {
-                console.error('Failed to load enrollments', error);
+                console.error('Failed to load data', error);
             } finally {
                 setLoading(false);
             }
         };
 
-        loadEnrollments();
+        loadData();
     }, []);
+
+    // Get unique batches from all enrollments
+    const availableBatches = useMemo(() => {
+        const batches = new Set<string>();
+        enrollments.forEach(e => batches.add(e.batchId));
+        return Array.from(batches).sort();
+    }, [enrollments]);
+
+    // Filter enrollments based on selected course and batch
+    const filteredEnrollments = useMemo(() => {
+        return enrollments.filter(enrollment => {
+            const matchesCourse = !selectedCourse ||
+                (enrollment.courseId?._id === selectedCourse || enrollment.courseId === selectedCourse);
+            const matchesBatch = !selectedBatch || enrollment.batchId === selectedBatch;
+            return matchesCourse && matchesBatch;
+        });
+    }, [enrollments, selectedCourse, selectedBatch]);
 
     return (
         <div className="p-6">
             <div className="mb-8">
                 <h1 className="text-3xl font-bold mb-2">Enrollment Management</h1>
                 <p className="text-muted-foreground">
-                    View all student enrollments
+                    View and filter student enrollments by course and batch
                 </p>
             </div>
+
+            {/* Filters */}
+            <Card className="mb-6">
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <Filter className="size-5" />
+                        Filters
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="grid md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium">Filter by Course</label>
+                            <select
+                                value={selectedCourse}
+                                onChange={(e) => setSelectedCourse(e.target.value)}
+                                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                            >
+                                <option value="">All Courses</option>
+                                {courses.map((course) => (
+                                    <option key={course._id} value={course._id}>
+                                        {course.title}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium">Filter by Batch</label>
+                            <select
+                                value={selectedBatch}
+                                onChange={(e) => setSelectedBatch(e.target.value)}
+                                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                            >
+                                <option value="">All Batches</option>
+                                {availableBatches.map((batch) => (
+                                    <option key={batch} value={batch}>
+                                        {batch}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+                    {(selectedCourse || selectedBatch) && (
+                        <div className="mt-4 text-sm text-muted-foreground">
+                            Showing {filteredEnrollments.length} of {enrollments.length} enrollments
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
 
             {loading ? (
                 <div className="flex justify-center py-12">
                     <LoadingSpinner size="lg" text="Loading enrollments..." />
                 </div>
-            ) : enrollments.length === 0 ? (
+            ) : filteredEnrollments.length === 0 ? (
                 <EmptyState
                     icon={<Users className="size-16" />}
-                    title="No enrollments yet"
-                    description="Students will appear here once they enroll in courses"
+                    title={enrollments.length === 0 ? "No enrollments yet" : "No matching enrollments"}
+                    description={enrollments.length === 0
+                        ? "Students will appear here once they enroll in courses"
+                        : "Try adjusting your filters"}
                 />
             ) : (
                 <Card>
                     <CardHeader>
-                        <CardTitle>All Enrollments ({enrollments.length})</CardTitle>
+                        <CardTitle>Enrollments ({filteredEnrollments.length})</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="overflow-x-auto">
@@ -70,7 +146,7 @@ function AdminEnrollmentsContent() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {enrollments.map((enrollment) => (
+                                    {filteredEnrollments.map((enrollment) => (
                                         <tr key={enrollment._id} className="border-b last:border-0 hover:bg-muted/50">
                                             <td className="p-4">
                                                 <div className="font-medium">{enrollment.studentId?.name || 'Unknown'}</div>
@@ -109,9 +185,5 @@ function AdminEnrollmentsContent() {
 }
 
 export default function AdminEnrollmentsPage() {
-    return (
-        <ProtectedRoute requiredRole="admin">
-            <AdminEnrollmentsContent />
-        </ProtectedRoute>
-    );
+    return <AdminEnrollmentsContent />;
 }

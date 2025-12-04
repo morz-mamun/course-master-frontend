@@ -6,9 +6,8 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import ProtectedRoute from '@/components/ProtectedRoute';
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { BookOpen, Users, ClipboardList, TrendingUp, Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -143,14 +142,14 @@ function AdminDashboardContent() {
                             onClick={() => router.push(stat.href)}
                         >
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
-                                <div className={`p-2 rounded-lg ${stat.bgColor}`}>
-                                    <stat.icon className={`h-4 w-4 ${stat.color}`} />
+                                <CardTitle className="text-sm font-medium">{stat?.title}</CardTitle>
+                                <div className={`p-2 rounded-lg ${stat?.bgColor}`}>
+                                    <stat.icon className={`h-4 w-4 ${stat?.color}`} />
                                 </div>
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">{stat.value}</div>
-                                <p className="text-xs text-muted-foreground mt-1">{stat.description}</p>
+                                <div className="text-2xl font-bold">{stat?.value}</div>
+                                <p className="text-xs text-muted-foreground mt-1">{stat?.description}</p>
                             </CardContent>
                         </Card>
                     ))}
@@ -172,8 +171,8 @@ function AdminDashboardContent() {
                                             <action.icon className="h-5 w-5 text-primary" />
                                         </div>
                                         <div className="flex-1">
-                                            <CardTitle className="text-base">{action.title}</CardTitle>
-                                            <CardDescription className="text-xs mt-1">{action.description}</CardDescription>
+                                            <CardTitle className="text-base">{action?.title}</CardTitle>
+                                            <CardDescription className="text-xs mt-1">{action?.description}</CardDescription>
                                         </div>
                                     </div>
                                 </CardHeader>
@@ -199,9 +198,5 @@ function AdminDashboardContent() {
 }
 
 export default function AdminDashboardPage() {
-    return (
-        <ProtectedRoute requiredRole="admin">
-            <AdminDashboardContent />
-        </ProtectedRoute>
-    );
+    return <AdminDashboardContent />;
 }

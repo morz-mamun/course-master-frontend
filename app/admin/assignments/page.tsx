@@ -2,18 +2,22 @@
 
 /**
  * Admin Assignments Page
- * Review student assignment submissions
+ * Review and grade student assignment submissions
  */
 
 import React, { useEffect, useState } from 'react';
 import { getAllSubmissions } from '@/services/student.service';
-import ProtectedRoute from '@/components/ProtectedRoute';
+import { adminService } from '@/services/admin.service';
+
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import EmptyState from '@/components/EmptyState';
-import { FileText, ExternalLink, Calendar } from 'lucide-react';
+import { FileText, ExternalLink, Calendar, CheckCircle } from 'lucide-react';
 
 function AdminAssignmentsContent() {
     const [submissions, setSubmissions] = useState<any[]>([]);
@@ -107,8 +111,21 @@ function AdminAssignmentsContent() {
                                     </div>
                                 </div>
 
-                                {/* Grading actions could go here */}
-                                {/* For now, just display */}
+                                {/* Grading Section */}
+
+                                <GradingForm
+
+                                    submission={submission}
+
+                                    onGraded={() => {
+
+                                        // Reload submissions after grading
+
+                                        getAllSubmissions().then(data => setSubmissions(data.submissions));
+
+                                    }}
+
+                                />
                             </CardContent>
                         </Card>
                     ))}
@@ -119,9 +136,78 @@ function AdminAssignmentsContent() {
 }
 
 export default function AdminAssignmentsPage() {
+    return <AdminAssignmentsContent />;
+}
+
+// Grading Form Component
+function GradingForm({ submission, onGraded }: { submission: any; onGraded: () => void }) {
+    const [score, setScore] = useState(submission.score || '');
+    const [feedback, setFeedback] = useState(submission.feedback || '');
+    const [grading, setGrading] = useState(false);
+    const [success, setSuccess] = useState(false);
+
+    const handleGrade = async () => {
+        setGrading(true);
+        try {
+            await adminService.gradeAssignment({
+                assignmentId: submission.assignmentId,
+                submissionId: submission._id,
+                score: Number(score),
+                feedback,
+            });
+            setSuccess(true);
+            setTimeout(() => {
+                setSuccess(false);
+                onGraded();
+            }, 2000);
+        } catch (error) {
+            console.error('Failed to grade assignment', error);
+        } finally {
+            setGrading(false);
+        }
+    };
+
+    if (success) {
+        return (
+            <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-md flex items-center gap-2 text-green-700">
+                <CheckCircle className="size-5" />
+                <span className="font-medium">Graded successfully!</span>
+            </div>
+        );
+    }
+
     return (
-        <ProtectedRoute requiredRole="admin">
-            <AdminAssignmentsContent />
-        </ProtectedRoute>
+        <div className="mt-4 p-4 border rounded-md space-y-4">
+            <h4 className="font-medium">Grade Submission</h4>
+            <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                    <Label htmlFor={`score-${submission._id}`}>Score (0-100)</Label>
+                    <Input
+                        id={`score-${submission._id}`}
+                        type="number"
+                        min="0"
+                        max="100"
+                        value={score}
+                        onChange={(e) => setScore(e.target.value)}
+                        placeholder="Enter score"
+                    />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor={`feedback-${submission._id}`}>Feedback (Optional)</Label>
+                    <Textarea
+                        id={`feedback-${submission._id}`}
+                        value={feedback}
+                        onChange={(e) => setFeedback(e.target.value)}
+                        placeholder="Provide feedback..."
+                        rows={3}
+                    />
+                </div>
+            </div>
+            <Button onClick={handleGrade} disabled={grading || !score}>
+                {grading ? 'Grading...' : submission.score ? 'Update Grade' : 'Submit Grade'}
+            </Button>
+        </div>
     );
 }
+
+

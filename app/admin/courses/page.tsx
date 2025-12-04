@@ -8,7 +8,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCourses } from '@/contexts/CourseContext';
-import ProtectedRoute from '@/components/ProtectedRoute';
+
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -124,9 +124,5 @@ function AdminCoursesContent() {
 }
 
 export default function AdminCoursesPage() {
-    return (
-        <ProtectedRoute requiredRole="admin">
-            <AdminCoursesContent />
-        </ProtectedRoute>
-    );
+    return <AdminCoursesContent />;
 }
