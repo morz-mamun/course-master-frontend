@@ -241,12 +241,21 @@ export default function LearnPage() {
                                         </div>
                                     </div>
                                 )}
-                                {!isLessonCompleted(currentLesson?.lessonId) && (materials?.assignments?.length > 0 || materials?.quizzes?.length > 0) && (
+                                {!isLessonCompleted(currentLesson?.lessonId) && (
                                     <Alert>
                                         <Lock className="size-4" />
                                         <AlertTitle>Materials Locked</AlertTitle>
                                         <AlertDescription>
                                             Complete the lesson video to unlock assignments and quizzes.
+                                        </AlertDescription>
+                                    </Alert>
+                                )}
+                                {isLessonCompleted(currentLesson?.lessonId) && (!materials.assignments.length || !materials.quizzes.length) && (
+                                    <Alert>
+                                        <Lock className="size-4" />
+                                        <AlertTitle>Materials Locked</AlertTitle>
+                                        <AlertDescription>
+                                            This Lession don't have any assignments or quizzes
                                         </AlertDescription>
                                     </Alert>
                                 )}
@@ -437,9 +446,9 @@ function QuizCard({ quiz }: { quiz: any }) {
                     <h3 className={cn("font-semibold text-lg mb-1", result.passed ? "text-green-700" : "text-red-700")}>
                         {result.passed ? "Quiz Passed!" : "Quiz Failed"}
                     </h3>
-                    <div className="text-2xl font-bold mb-2">
-                        {result.score}%
-                    </div>
+                    <p className="text-2xl font-bold mb-2">
+                        <span className="text-green-700">Your Score:</span> {result.score}%
+                    </p>
                     <p className="text-sm text-muted-foreground">
                         Passing score: {result.passingScore}%
                     </p>

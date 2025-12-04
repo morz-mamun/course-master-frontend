@@ -76,8 +76,8 @@ function DashboardContent() {
                                 <Card key={enrollment._id} className="hover:shadow-lg transition-shadow">
                                     <CardHeader>
                                         <CardTitle className="line-clamp-2">{course?.title}</CardTitle>
-                                        <CardDescription className="line-clamp-2">
-                                            {course?.description}
+                                        <CardDescription className="h-12">
+                                            {`${course?.description?.length > 120 ? course?.description?.slice(0, 120) + '...' : course?.description}` || 'No description available'}
                                         </CardDescription>
                                     </CardHeader>
                                     <CardContent className="space-y-4">
