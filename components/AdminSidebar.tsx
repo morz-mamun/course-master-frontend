@@ -13,6 +13,7 @@ import {
     BookOpen,
     Users,
     ClipboardList,
+    FileText,
     LogOut,
     User,
 } from 'lucide-react';
@@ -41,6 +42,11 @@ const navigationItems = [
         title: 'Courses',
         href: '/admin/courses',
         icon: BookOpen,
+    },
+    {
+        title: 'Materials',
+        href: '/admin/materials',
+        icon: FileText,
     },
     {
         title: 'Enrollments',

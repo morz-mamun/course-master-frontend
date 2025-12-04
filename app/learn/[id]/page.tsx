@@ -138,8 +138,8 @@ export default function LearnPage() {
             >
                 <div className="flex flex-col h-full">
                     <div className="p-4 border-b flex items-center justify-between">
-                        <h2 className="font-semibold truncate" title={course.title}>
-                            {course.title}
+                        <h2 className="font-semibold truncate" title={course?.title}>
+                            {course?.title}
                         </h2>
                         <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(false)} className="lg:hidden">
                             <ChevronLeft className="size-4" />
@@ -147,19 +147,19 @@ export default function LearnPage() {
                     </div>
 
                     <div className="flex-1 overflow-y-auto p-4 space-y-2">
-                        {course.syllabus.map((lesson, index) => (
+                        {course?.syllabus?.map((lesson, index) => (
                             <button
                                 key={lesson.lessonId}
                                 onClick={() => handleLessonSelect(lesson)}
                                 className={cn(
                                     "w-full text-left p-3 rounded-lg text-sm transition-colors flex items-start gap-3",
-                                    currentLesson?.lessonId === lesson.lessonId
+                                    currentLesson?.lessonId === lesson?.lessonId
                                         ? "bg-primary/10 text-primary"
                                         : "hover:bg-muted"
                                 )}
                             >
                                 <div className="mt-0.5">
-                                    {isLessonCompleted(lesson.lessonId) ? (
+                                    {isLessonCompleted(lesson?.lessonId) ? (
                                         <CheckCircle className="size-4 text-green-500" />
                                     ) : (
                                         <PlayCircle className="size-4" />
@@ -167,10 +167,10 @@ export default function LearnPage() {
                                 </div>
                                 <div>
                                     <div className="font-medium">
-                                        {index + 1}. {lesson.title}
+                                        {index + 1}. {lesson?.title}
                                     </div>
                                     <div className="text-xs text-muted-foreground mt-1">
-                                        {lesson.duration} min
+                                        {lesson?.duration} min
                                     </div>
                                 </div>
                             </button>
@@ -212,27 +212,27 @@ export default function LearnPage() {
 
                                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                                     <div>
-                                        <h1 className="text-2xl font-bold mb-2">{currentLesson.title}</h1>
-                                        <p className="text-muted-foreground">{currentLesson.description}</p>
+                                        <h1 className="text-2xl font-bold mb-2">{currentLesson?.title}</h1>
+                                        <p className="text-muted-foreground">{currentLesson?.description}</p>
                                     </div>
                                     <Button
                                         size="lg"
                                         onClick={handleMarkCompleted}
                                         disabled={updating}
                                         className={cn(
-                                            isLessonCompleted(currentLesson.lessonId) && "bg-green-500 hover:bg-green-600"
+                                            isLessonCompleted(currentLesson?.lessonId) && "bg-green-500 hover:bg-green-600"
                                         )}
                                     >
-                                        {updating ? 'Updating...' : isLessonCompleted(currentLesson.lessonId) ? 'Completed' : 'Mark as Completed'}
+                                        {updating ? 'Updating...' : isLessonCompleted(currentLesson?.lessonId) ? 'Completed' : 'Mark as Completed'}
                                     </Button>
                                 </div>
 
                                 {/* Assignments & Quizzes */}
-                                {isLessonCompleted(currentLesson.lessonId) && (materials.assignments.length > 0 || materials.quizzes.length > 0) && (
+                                {isLessonCompleted(currentLesson?.lessonId) && (materials?.assignments?.length > 0 || materials?.quizzes?.length > 0) && (
                                     <div className="space-y-4">
                                         <h2 className="text-xl font-semibold">Lesson Materials</h2>
                                         <div className="grid gap-6">
-                                            {materials.assignments.map((assignment) => (
+                                            {materials?.assignments?.map((assignment) => (
                                                 <AssignmentCard key={assignment._id} assignment={assignment} />
                                             ))}
                                             {materials.quizzes.map((quiz) => (
@@ -241,7 +241,7 @@ export default function LearnPage() {
                                         </div>
                                     </div>
                                 )}
-                                {!isLessonCompleted(currentLesson.lessonId) && (materials.assignments.length > 0 || materials.quizzes.length > 0) && (
+                                {!isLessonCompleted(currentLesson?.lessonId) && (materials?.assignments?.length > 0 || materials?.quizzes?.length > 0) && (
                                     <Alert>
                                         <Lock className="size-4" />
                                         <AlertTitle>Materials Locked</AlertTitle>
@@ -269,6 +269,11 @@ function AssignmentCard({ assignment }: { assignment: any }) {
     const [submitting, setSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
 
+    // Check if student has already submitted
+    const studentSubmission = assignment.studentSubmission;
+    const hasSubmitted = !!studentSubmission;
+    const isGraded = hasSubmitted && studentSubmission.score !== undefined;
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSubmitting(true);
@@ -286,18 +291,70 @@ function AssignmentCard({ assignment }: { assignment: any }) {
         }
     };
 
-    if (submitted) {
+    // Show graded status
+    if (isGraded) {
         return (
-            <Card className="bg-green-50/50 border-green-200">
-                <CardContent className="pt-6 text-center text-green-700">
-                    <CheckCircle className="size-12 mx-auto mb-2" />
-                    <h3 className="font-semibold text-lg">Assignment Submitted!</h3>
-                    <p className="text-sm">Your work has been received.</p>
+            <Card className="bg-blue-50/50 border-blue-200">
+                <CardHeader>
+                    <div className="flex items-center justify-between">
+                        <CardTitle className="flex items-center gap-2">
+                            <FileText className="size-5 text-primary" />
+                            {assignment.title}
+                        </CardTitle>
+                        <Badge variant="default">Graded</Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground">{assignment.description}</p>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="p-4 bg-white rounded-lg border">
+                        <div className="flex items-center justify-between mb-2">
+                            <span className="font-medium">Your Score:</span>
+                            <Badge className="text-lg">{studentSubmission.score}/{assignment.maxScore}</Badge>
+                        </div>
+                        {studentSubmission.feedback && (
+                            <div className="mt-3">
+                                <span className="font-medium text-sm">Feedback:</span>
+                                <p className="text-sm text-muted-foreground mt-1">{studentSubmission.feedback}</p>
+                            </div>
+                        )}
+                        <p className="text-xs text-muted-foreground mt-2">
+                            Graded on {new Date(studentSubmission.gradedAt).toLocaleDateString()}
+                        </p>
+                    </div>
                 </CardContent>
             </Card>
         );
     }
 
+    // Show pending review status
+    if (hasSubmitted || submitted) {
+        return (
+            <Card className="bg-yellow-50/50 border-yellow-200">
+                <CardHeader>
+                    <div className="flex items-center justify-between">
+                        <CardTitle className="flex items-center gap-2">
+                            <FileText className="size-5 text-primary" />
+                            {assignment.title}
+                        </CardTitle>
+                        <Badge variant="secondary">Pending Review</Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground">{assignment.description}</p>
+                </CardHeader>
+                <CardContent className="text-center py-6">
+                    <CheckCircle className="size-12 mx-auto mb-2 text-yellow-600" />
+                    <h3 className="font-semibold text-lg text-yellow-800">Assignment Submitted!</h3>
+                    <p className="text-sm text-yellow-700 mt-1">Waiting for instructor to review and grade your work.</p>
+                    {studentSubmission && (
+                        <p className="text-xs text-muted-foreground mt-2">
+                            Submitted on {new Date(studentSubmission.submittedAt).toLocaleDateString()}
+                        </p>
+                    )}
+                </CardContent>
+            </Card>
+        );
+    }
+
+    // Show submission form
     return (
         <Card>
             <CardHeader>

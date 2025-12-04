@@ -75,9 +75,9 @@ function DashboardContent() {
                             return (
                                 <Card key={enrollment._id} className="hover:shadow-lg transition-shadow">
                                     <CardHeader>
-                                        <CardTitle className="line-clamp-2">{course.title}</CardTitle>
+                                        <CardTitle className="line-clamp-2">{course?.title}</CardTitle>
                                         <CardDescription className="line-clamp-2">
-                                            {course.description}
+                                            {course?.description}
                                         </CardDescription>
                                     </CardHeader>
                                     <CardContent className="space-y-4">

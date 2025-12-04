@@ -38,6 +38,44 @@ class AdminService {
         const response = await api.post('/admin/grade', data);
         return response.data;
     }
+
+    async createAssignment(data: {
+        courseId: string;
+        lessonId: string;
+        title: string;
+        description: string;
+        dueDate: string;
+        maxScore?: number;
+    }): Promise<any> {
+        const response = await api.post('/admin/assignments', data);
+        return response.data;
+    }
+
+    async createQuiz(data: {
+        courseId: string;
+        lessonId: string;
+        title: string;
+        description?: string;
+        questions: Array<{
+            questionText: string;
+            options: Array<{ text: string; isCorrect: boolean }>;
+            explanation?: string;
+        }>;
+        passingScore?: number;
+    }): Promise<any> {
+        const response = await api.post('/admin/quizzes', data);
+        return response.data;
+    }
+
+    async getAssignmentsByLesson(courseId: string, lessonId: string): Promise<{ assignments: any[] }> {
+        const response = await api.get(`/admin/assignments/${courseId}/${lessonId}`);
+        return response.data;
+    }
+
+    async getQuizzesByLesson(courseId: string, lessonId: string): Promise<{ quizzes: any[] }> {
+        const response = await api.get(`/admin/quizzes/${courseId}/${lessonId}`);
+        return response.data;
+    }
 }
 
 export const adminService = new AdminService();
