@@ -1,24 +1,30 @@
 "use client"
 
 /**
- * Create Course Page
- * Form to create a new course
+ * Edit Course Page
+ * Form to edit an existing course
  */
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
+import { useRouter, useParams } from 'next/navigation';
 import { useCourses } from '@/contexts/CourseContext';
+import { getCourseById } from '@/services/course.service';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Plus, Trash2, Loader2 } from 'lucide-react';
+import { Plus, Trash2, Loader2, ArrowLeft } from 'lucide-react';
+import LoadingSpinner from '@/components/LoadingSpinner';
 import type { Lesson, Batch } from '@/lib/types';
 
-function CreateCourseContent() {
+function EditCourseContent() {
     const router = useRouter();
-    const { createCourse } = useCourses();
+    const params = useParams();
+    const courseId = params.id as string;
+    const { updateCourse } = useCourses();
+
     const [loading, setLoading] = useState(false);
+    const [fetching, setFetching] = useState(true);
     const [error, setError] = useState('');
 
     const [formData, setFormData] = useState({
@@ -29,13 +35,41 @@ function CreateCourseContent() {
         tags: '',
     });
 
-    const [syllabus, setSyllabus] = useState<Lesson[]>([
-        { lessonId: 'lesson-1', title: '', duration: 30, description: '', videoUrl: '' }
-    ]);
+    const [syllabus, setSyllabus] = useState<Lesson[]>([]);
+    const [batches, setBatches] = useState<Batch[]>([]);
 
-    const [batches, setBatches] = useState<Batch[]>([
-        { batchId: 'batch-1', startDate: '', endDate: '', capacity: 30 }
-    ]);
+    useEffect(() => {
+        const loadCourse = async () => {
+            try {
+                const { course } = await getCourseById(courseId);
+                setFormData({
+                    title: course.title,
+                    description: course.description,
+                    price: course.price,
+                    category: course.category,
+                    tags: course.tags.join(', '),
+                });
+                setSyllabus(course.syllabus || []);
+
+                // Format dates for input type="date"
+                const formattedBatches = (course.batches || []).map(batch => ({
+                    ...batch,
+                    startDate: new Date(batch.startDate).toISOString().split('T')[0],
+                    endDate: new Date(batch.endDate).toISOString().split('T')[0],
+                }));
+                setBatches(formattedBatches);
+            } catch (err) {
+                setError('Failed to load course details');
+                console.error(err);
+            } finally {
+                setFetching(false);
+            }
+        };
+
+        if (courseId) {
+            loadCourse();
+        }
+    }, [courseId]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -43,7 +77,7 @@ function CreateCourseContent() {
         setLoading(true);
 
         try {
-            await createCourse({
+            await updateCourse(courseId, {
                 ...formData,
                 tags: formData.tags.split(',').map(t => t.trim()).filter(Boolean),
                 syllabus: syllabus.filter(l => l.title),
@@ -55,7 +89,7 @@ function CreateCourseContent() {
             });
             router.push('/admin/courses');
         } catch (err: any) {
-            setError(err.response?.data?.error || 'Failed to create course');
+            setError(err.response?.data?.error || 'Failed to update course');
         } finally {
             setLoading(false);
         }
@@ -100,13 +134,30 @@ function CreateCourseContent() {
         setBatches(updated);
     };
 
+    if (fetching) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <LoadingSpinner size="lg" text="Loading course details..." />
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen bg-background">
             <div className="container mx-auto px-4 py-8 max-w-4xl">
+                <Button
+                    variant="ghost"
+                    onClick={() => router.push('/admin/courses')}
+                    className="mb-6 gap-2"
+                >
+                    <ArrowLeft className="size-4" />
+                    Back to Courses
+                </Button>
+
                 <div className="mb-8">
-                    <h1 className="text-3xl md:text-4xl font-bold mb-2">Create New Course</h1>
+                    <h1 className="text-3xl md:text-4xl font-bold mb-2">Edit Course</h1>
                     <p className="text-muted-foreground">
-                        Add a new course to the platform
+                        Update course details, syllabus, and batches
                     </p>
                 </div>
 
@@ -193,16 +244,14 @@ function CreateCourseContent() {
                                 <div key={index} className="p-4 border rounded-lg space-y-3">
                                     <div className="flex items-center justify-between">
                                         <span className="font-medium">Lesson {index + 1}</span>
-                                        {syllabus.length > 1 && (
-                                            <Button
-                                                type="button"
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={() => removeLesson(index)}
-                                            >
-                                                <Trash2 className="size-4" />
-                                            </Button>
-                                        )}
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => removeLesson(index)}
+                                        >
+                                            <Trash2 className="size-4" />
+                                        </Button>
                                     </div>
 
                                     <Input
@@ -249,16 +298,14 @@ function CreateCourseContent() {
                                 <div key={index} className="p-4 border rounded-lg space-y-3">
                                     <div className="flex items-center justify-between">
                                         <span className="font-medium">Batch {index + 1}</span>
-                                        {batches.length > 1 && (
-                                            <Button
-                                                type="button"
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={() => removeBatch(index)}
-                                            >
-                                                <Trash2 className="size-4" />
-                                            </Button>
-                                        )}
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => removeBatch(index)}
+                                        >
+                                            <Trash2 className="size-4" />
+                                        </Button>
                                     </div>
 
                                     <div className="grid sm:grid-cols-3 gap-3">
@@ -299,10 +346,10 @@ function CreateCourseContent() {
                             {loading ? (
                                 <>
                                     <Loader2 className="mr-2 size-4 animate-spin" />
-                                    Creating...
+                                    Updating...
                                 </>
                             ) : (
-                                'Create Course'
+                                'Update Course'
                             )}
                         </Button>
                         <Button
@@ -320,6 +367,6 @@ function CreateCourseContent() {
     );
 }
 
-export default function CreateCoursePage() {
-    return <CreateCourseContent />;
+export default function EditCoursePage() {
+    return <EditCourseContent />;
 }

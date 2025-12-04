@@ -15,11 +15,7 @@ interface DashboardStats {
 class AdminService {
     async getDashboardStats(): Promise<DashboardStats> {
         try {
-            const response = await api.get<DashboardStats>('/admin/stats', {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                },
-            });
+            const response = await api.get<DashboardStats>('/admin/stats');
             console.log('admin stats', response.data);
             return response.data;
         } catch (error) {
