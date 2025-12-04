@@ -28,9 +28,11 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
+    SidebarRail,
     SidebarSeparator,
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
 
 const navigationItems = [
     {
@@ -60,7 +62,8 @@ const navigationItems = [
     },
 ];
 
-export function AdminSidebar() {
+export default function AdminSidebar() {
+    const { user, logout } = useAuth();
     const pathname = usePathname();
     const router = useRouter();
 
@@ -73,33 +76,21 @@ export function AdminSidebar() {
         router.push('/login');
     };
 
-    // Get user info from localStorage
-    const [user, setUser] = React.useState<{ name?: string; email?: string } | null>(null);
-
-    React.useEffect(() => {
-        const userStr = localStorage.getItem('user');
-        if (userStr) {
-            try {
-                setUser(JSON.parse(userStr));
-            } catch (e) {
-                console.error('Failed to parse user data');
-            }
-        }
-    }, []);
-
     return (
         <Sidebar>
-            <SidebarHeader className="border-b border-sidebar-border">
-                <div className="flex items-center gap-2 px-2 py-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                        <BookOpen className="h-6 w-6" />
+            <SidebarHeader className="border-b">
+                <Link href="/">
+                    <div className="flex items-center gap-2 px-4 py-1">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                            <BookOpen className="h-6 w-6" />
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="text-lg font-semibold">Course Master</span>
+                        </div>
                     </div>
-                    <div className="flex flex-col">
-                        <span className="text-lg font-semibold">Course Master</span>
-                        <span className="text-xs text-muted-foreground">Admin Panel</span>
-                    </div>
-                </div>
+                </Link>
             </SidebarHeader>
+
 
             <SidebarContent>
                 <SidebarGroup>
@@ -124,38 +115,23 @@ export function AdminSidebar() {
                 </SidebarGroup>
             </SidebarContent>
 
-            <SidebarFooter className="border-t border-sidebar-border">
-                <SidebarGroup>
-                    <SidebarGroupContent>
-                        <div className="flex flex-col gap-2 p-2">
-                            {user && (
-                                <div className="flex items-center gap-2 rounded-md bg-sidebar-accent px-2 py-2">
-                                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                                        <User className="h-4 w-4" />
-                                    </div>
-                                    <div className="flex flex-col flex-1 min-w-0">
-                                        <span className="text-sm font-medium truncate">
-                                            {user.name || 'Admin User'}
-                                        </span>
-                                        <span className="text-xs text-muted-foreground truncate">
-                                            {user.email || 'admin@example.com'}
-                                        </span>
-                                    </div>
-                                </div>
-                            )}
-                            <SidebarSeparator />
-                            <Button
-                                variant="ghost"
-                                className="w-full justify-start gap-2"
-                                onClick={handleLogout}
-                            >
-                                <LogOut className="h-4 w-4" />
-                                <span>Logout</span>
-                            </Button>
+            <SidebarFooter>
+                <div className="flex items-center justify-between px-4 py-2">
+                    <div className="flex items-center gap-2">
+                        <div className="relative h-8 w-8 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center text-xs font-medium text-gray-700">
+                            {user?.name?.charAt(0) || "F"}
                         </div>
-                    </SidebarGroupContent>
-                </SidebarGroup>
+
+                        <div className="flex flex-col">
+                            <span className="text-sm font-medium">{user?.name}</span>
+                            <span className="text-xs text-muted-foreground capitalize">
+                                {user?.role}
+                            </span>
+                        </div>
+                    </div>
+                </div>
             </SidebarFooter>
+            <SidebarRail />
         </Sidebar>
     );
 }

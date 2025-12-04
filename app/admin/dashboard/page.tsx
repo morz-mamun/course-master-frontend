@@ -9,7 +9,7 @@ import React, { useEffect, useState } from 'react';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import LoadingSpinner from '@/components/LoadingSpinner';
-import { BookOpen, Users, ClipboardList, TrendingUp, Plus } from 'lucide-react';
+import { BookOpen, Users, ClipboardList, TrendingUp, Plus, Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { adminService } from '@/services/admin.service';
 
@@ -123,16 +123,20 @@ function AdminDashboardContent() {
     }
 
     return (
-        <div className="flex-1 p-4 md:p-6 lg:p-8">
-            <div className="max-w-7xl mx-auto space-y-8">
-                {/* Welcome Section */}
-                <div className="space-y-1">
-                    <h1 className="text-2xl md:text-3xl font-bold">Admin Dashboard</h1>
-                    <p className="text-sm md:text-base text-muted-foreground">
-                        Manage courses, students, and assignments from one place
-                    </p>
+        <div className="bg-background">
+            <header className="sticky top-0 z-50 w-full border-b border-border bg-card">
+                <div className="container mx-auto flex h-16 items-center justify-between px-4">
+                    <div className="flex items-center gap-6">
+                        <div className="flex flex-col">
+                            <h2 className="text-xl font-bold">Admin Dashboar</h2>
+                            <p>
+                                Welcome back!  Manage courses, students, and assignments from one place.
+                            </p>
+                        </div>
+                    </div>
                 </div>
-
+            </header>
+            <main className="container mx-auto px-4 py-8 space-y-8">
                 {/* Stats Cards */}
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     {statCards.map((stat) => (
@@ -154,7 +158,6 @@ function AdminDashboardContent() {
                         </Card>
                     ))}
                 </div>
-
                 {/* Quick Actions */}
                 <div className="space-y-4">
                     <h2 className="text-xl md:text-2xl font-bold">Quick Actions</h2>
@@ -180,7 +183,6 @@ function AdminDashboardContent() {
                         ))}
                     </div>
                 </div>
-
                 {/* Recent Activity Section - Placeholder */}
                 <div className="space-y-4">
                     <h2 className="text-xl md:text-2xl font-bold">Recent Activity</h2>
@@ -192,7 +194,7 @@ function AdminDashboardContent() {
                         </CardContent>
                     </Card>
                 </div>
-            </div>
+            </main>
         </div>
     );
 }
