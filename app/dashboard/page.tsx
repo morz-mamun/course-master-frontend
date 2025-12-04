@@ -2,20 +2,20 @@
 
 /**
  * Student Dashboard
- * Display enrolled courses and progress
+ * Display enrolled courses and progress with enhanced UI
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCourses } from '@/contexts/CourseContext';
 import { useAuth } from '@/contexts/AuthContext';
-
+import { Badge } from '@/components/ui/badge';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import ProgressBar from '@/components/ProgressBar';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import EmptyState from '@/components/EmptyState';
-import { BookOpen, ArrowRight } from 'lucide-react';
+import { BookOpen, ArrowRight, GraduationCap, TrendingUp, Clock, CheckCircle2 } from 'lucide-react';
 import type { Course, Enrollment } from '@/lib/types';
 
 function DashboardContent() {
@@ -34,86 +34,202 @@ function DashboardContent() {
         return null;
     };
 
+    // Calculate dashboard stats
+    const stats = useMemo(() => {
+        const totalEnrolled = enrolledCourses.length;
+        const completed = enrolledCourses.filter(e => e.progress?.percentage === 100).length;
+        const inProgress = enrolledCourses.filter(e => (e.progress?.percentage || 0) > 0 && (e.progress?.percentage || 0) < 100).length;
+        const avgProgress = totalEnrolled > 0
+            ? Math.round(enrolledCourses.reduce((sum, e) => sum + (e.progress?.percentage || 0), 0) / totalEnrolled)
+            : 0;
+
+        return { totalEnrolled, completed, inProgress, avgProgress };
+    }, [enrolledCourses]);
+
+    const statCards = [
+        {
+            title: 'Enrolled Courses',
+            value: stats.totalEnrolled,
+            description: 'Total courses enrolled',
+            icon: BookOpen,
+            color: 'text-blue-600',
+            bgColor: 'bg-blue-100',
+        },
+        {
+            title: 'Completed',
+            value: stats.completed,
+            description: 'Courses completed',
+            icon: CheckCircle2,
+            color: 'text-green-600',
+            bgColor: 'bg-green-100',
+        },
+        {
+            title: 'In Progress',
+            value: stats.inProgress,
+            description: 'Currently learning',
+            icon: Clock,
+            color: 'text-orange-600',
+            bgColor: 'bg-orange-100',
+        },
+        {
+            title: 'Average Progress',
+            value: `${stats.avgProgress}%`,
+            description: 'Overall completion',
+            icon: TrendingUp,
+            color: 'text-purple-600',
+            bgColor: 'bg-purple-100',
+        },
+    ];
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-[400px]">
+                <LoadingSpinner size="lg" text="Loading dashboard..." />
+            </div>
+        );
+    }
+
     return (
-        <div className="min-h-screen bg-background">
-            <div className="container mx-auto px-4 py-8">
-                {/* Header */}
-                <div className="mb-8">
-                    <h1 className="text-3xl md:text-4xl font-bold mb-2">
-                        Welcome back, {user?.name}!
+        <div className="flex-1 p-4 md:p-6 lg:p-8">
+            <div className="max-w-7xl mx-auto space-y-8">
+                {/* Welcome Section */}
+                <div className="space-y-1">
+                    <h1 className="text-2xl md:text-3xl font-bold">
+                        Welcome back, {user?.name}! 👋
                     </h1>
-                    <p className="text-muted-foreground">
-                        Continue your learning journey
+                    <p className="text-sm md:text-base text-muted-foreground">
+                        Continue your learning journey and track your progress
                     </p>
                 </div>
 
-                {/* Enrolled Courses */}
-                {loading ? (
-                    <div className="flex justify-center py-12">
-                        <LoadingSpinner size="lg" text="Loading your courses..." />
-                    </div>
-                ) : enrolledCourses.length === 0 ? (
+                {enrolledCourses.length === 0 ? (
                     <EmptyState
                         icon={<BookOpen className="size-16" />}
                         title="No enrolled courses yet"
-                        description="Start learning by enrolling in a course"
+                        description="Start your learning journey by enrolling in a course"
                         action={
-                            <Button onClick={() => router.push('/courses')}>
+                            <Button onClick={() => router.push('/courses')} size="lg">
+                                <GraduationCap className="size-4 mr-2" />
                                 Browse Courses
                             </Button>
                         }
                     />
                 ) : (
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {enrolledCourses.map((enrollment) => {
-                            const course = getCourse(enrollment);
-                            if (!course) return null;
-
-                            const progress = enrollment.progress;
-                            const percentage = progress?.percentage || 0;
-
-                            return (
-                                <Card key={enrollment._id} className="hover:shadow-lg transition-shadow">
-                                    <CardHeader>
-                                        <CardTitle className="line-clamp-2">{course?.title}</CardTitle>
-                                        <CardDescription className="h-12">
-                                            {`${course?.description?.length > 120 ? course?.description?.slice(0, 120) + '...' : course?.description}` || 'No description available'}
-                                        </CardDescription>
-                                    </CardHeader>
-                                    <CardContent className="space-y-4">
-                                        <ProgressBar percentage={percentage} />
-
-                                        <div className="flex items-center justify-between text-sm text-muted-foreground">
-                                            <span>
-                                                {progress?.lessonsCompleted || 0} / {progress?.totalLessons || course.syllabus.length} lessons
-                                            </span>
-                                            <span className="capitalize">{enrollment.status}</span>
+                    <>
+                        {/* Stats Cards */}
+                        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                            {statCards.map((stat) => (
+                                <Card key={stat.title} className="hover:shadow-lg transition-all">
+                                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                        <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
+                                        <div className={`p-2 rounded-lg ${stat.bgColor}`}>
+                                            <stat.icon className={`h-4 w-4 ${stat.color}`} />
                                         </div>
-
-                                        <Button
-                                            className="w-full gap-2 group"
-                                            onClick={() => router.push(`/learn/${course._id}`)}
-                                        >
-                                            Continue Learning
-                                            <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
-                                        </Button>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="text-2xl font-bold">{stat.value}</div>
+                                        <p className="text-xs text-muted-foreground mt-1">{stat.description}</p>
                                     </CardContent>
                                 </Card>
-                            );
-                        })}
-                    </div>
-                )}
+                            ))}
+                        </div>
 
-                {/* Quick Actions */}
-                {enrolledCourses.length > 0 && (
-                    <div className="mt-12 text-center">
-                        <p className="text-muted-foreground mb-4">
-                            Looking for more courses?
-                        </p>
-                        <Button variant="outline" onClick={() => router.push('/courses')}>
-                            Browse All Courses
-                        </Button>
-                    </div>
+                        {/* Quick Actions */}
+                        <div className="space-y-4">
+                            <h2 className="text-xl md:text-2xl font-bold">Quick Actions</h2>
+                            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                                <Card
+                                    className="cursor-pointer hover:shadow-lg transition-all hover:scale-[1.02]"
+                                    onClick={() => router.push('/dashboard/courses')}
+                                >
+                                    <CardHeader className="pb-3">
+                                        <div className="flex items-center gap-3">
+                                            <div className="p-2 rounded-lg bg-primary/10">
+                                                <BookOpen className="h-5 w-5 text-primary" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <CardTitle className="text-base">My Courses</CardTitle>
+                                                <CardDescription className="text-xs mt-1">
+                                                    View all enrolled courses
+                                                </CardDescription>
+                                            </div>
+                                        </div>
+                                    </CardHeader>
+                                </Card>
+
+                                <Card
+                                    className="cursor-pointer hover:shadow-lg transition-all hover:scale-[1.02]"
+                                    onClick={() => router.push('/courses')}
+                                >
+                                    <CardHeader className="pb-3">
+                                        <div className="flex items-center gap-3">
+                                            <div className="p-2 rounded-lg bg-primary/10">
+                                                <GraduationCap className="h-5 w-5 text-primary" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <CardTitle className="text-base">Explore Courses</CardTitle>
+                                                <CardDescription className="text-xs mt-1">
+                                                    Discover new courses to learn
+                                                </CardDescription>
+                                            </div>
+                                        </div>
+                                    </CardHeader>
+                                </Card>
+
+                                <Card
+                                    className="cursor-pointer hover:shadow-lg transition-all hover:scale-[1.02]"
+                                    onClick={() => {
+                                        const inProgressCourse = enrolledCourses.find(e =>
+                                            (e.progress?.percentage || 0) > 0 && (e.progress?.percentage || 0) < 100
+                                        );
+                                        if (inProgressCourse) {
+                                            const course = getCourse(inProgressCourse);
+                                            if (course) router.push(`/dashboard/learn/${course._id}`);
+                                        }
+                                    }}
+                                >
+                                    <CardHeader className="pb-3">
+                                        <div className="flex items-center gap-3">
+                                            <div className="p-2 rounded-lg bg-orange-100">
+                                                <Clock className="h-5 w-5 text-orange-600" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <CardTitle className="text-base">Continue Learning</CardTitle>
+                                                <CardDescription className="text-xs mt-1">
+                                                    Resume your in-progress courses
+                                                </CardDescription>
+                                            </div>
+                                        </div>
+                                    </CardHeader>
+                                </Card>
+
+                                <Card
+                                    className="cursor-pointer hover:shadow-lg transition-all hover:scale-[1.02]"
+                                    onClick={() => {
+                                        const completedCourse = enrolledCourses.find(e => e.progress?.percentage === 100);
+                                        if (completedCourse) {
+                                            const course = getCourse(completedCourse);
+                                            if (course) router.push(`/dashboard/learn/${course._id}`);
+                                        }
+                                    }}
+                                >
+                                    <CardHeader className="pb-3">
+                                        <div className="flex items-center gap-3">
+                                            <div className="p-2 rounded-lg bg-green-100">
+                                                <CheckCircle2 className="h-5 w-5 text-green-600" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <CardTitle className="text-base">Completed Courses</CardTitle>
+                                                <CardDescription className="text-xs mt-1">
+                                                    Review your completed courses
+                                                </CardDescription>
+                                            </div>
+                                        </div>
+                                    </CardHeader>
+                                </Card>
+                            </div>
+                        </div>
+                    </>
                 )}
             </div>
         </div>

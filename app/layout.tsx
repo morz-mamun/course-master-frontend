@@ -21,10 +21,11 @@ const geistMono = Geist_Mono({
 function LayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isAdminRoute = pathname?.startsWith('/admin');
+  const isStudentRoute = pathname?.startsWith('/dashboard');
 
   return (
     <>
-      {!isAdminRoute && <Navbar />}
+      {!isAdminRoute && !isStudentRoute && <Navbar />}
       <main>{children}</main>
     </>
   );
