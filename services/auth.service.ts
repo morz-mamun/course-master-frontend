@@ -15,7 +15,7 @@ import type {
  * Login user
  */
 export const login = async (data: LoginFormData): Promise<AuthResponse> => {
-    const response = await api.post<AuthResponse>('/api/auth/login', data);
+    const response = await api.post<AuthResponse>('/auth/login', data);
     return response.data;
 };
 
@@ -23,7 +23,7 @@ export const login = async (data: LoginFormData): Promise<AuthResponse> => {
  * Register new user
  */
 export const register = async (data: RegisterFormData): Promise<AuthResponse> => {
-    const response = await api.post<AuthResponse>('/api/auth/register', data);
+    const response = await api.post<AuthResponse>('/auth/register', data);
     return response.data;
 };
 
@@ -31,7 +31,7 @@ export const register = async (data: RegisterFormData): Promise<AuthResponse> =>
  * Logout current user
  */
 export const logout = async (): Promise<{ message: string }> => {
-    const response = await api.post<{ message: string }>('/api/auth/logout');
+    const response = await api.post<{ message: string }>('/auth/logout');
     return response.data;
 };
 
@@ -39,6 +39,6 @@ export const logout = async (): Promise<{ message: string }> => {
  * Get current authenticated user
  */
 export const getCurrentUser = async (): Promise<{ user: User }> => {
-    const response = await api.get<{ user: User }>('/api/auth/me');
+    const response = await api.get<{ user: User }>('/auth/me');
     return response.data;
 };

@@ -1,136 +1,195 @@
 "use client"
 
 /**
- * Admin Dashboard
- * Overview and quick actions for administrators
+ * Admin Dashboard Home Page
+ * Displays overview statistics and quick actions
  */
 
-import React, { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useCourses } from '@/contexts/CourseContext';
+import React, { useEffect, useState } from 'react';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { BookOpen, Plus, Users, TrendingUp } from 'lucide-react';
+import LoadingSpinner from '@/components/LoadingSpinner';
+import { BookOpen, Users, ClipboardList, TrendingUp, Plus } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { adminService } from '@/services/admin.service';
+
+interface DashboardStats {
+    totalCourses: number;
+    totalStudents: number;
+    totalEnrollments: number;
+    totalAssignments: number;
+}
 
 function AdminDashboardContent() {
     const router = useRouter();
-    const { courses, fetchCourses } = useCourses();
+    const [stats, setStats] = useState<DashboardStats>({
+        totalCourses: 0,
+        totalStudents: 0,
+        totalEnrollments: 0,
+        totalAssignments: 0,
+    });
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetchCourses({ limit: 100 });
+        fetchDashboardStats();
     }, []);
 
-    const totalEnrollments = courses.reduce((sum, course) => sum + course.enrollmentCount, 0);
-    const averagePrice = courses.length > 0
-        ? courses.reduce((sum, course) => sum + course.price, 0) / courses.length
-        : 0;
+    const fetchDashboardStats = async () => {
+        try {
+            setLoading(true);
+            // Fetch stats from API
+            const data = await adminService.getDashboardStats();
+            setStats(data);
+        } catch (error) {
+            console.error('Failed to fetch dashboard stats:', error);
+            // Set default values on error
+            setStats({
+                totalCourses: 0,
+                totalStudents: 0,
+                totalEnrollments: 0,
+                totalAssignments: 0,
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const statCards = [
+        {
+            title: 'Total Courses',
+            value: stats.totalCourses,
+            description: 'Active courses on platform',
+            icon: BookOpen,
+            color: 'text-blue-600',
+            bgColor: 'bg-blue-100',
+            href: '/admin/courses',
+        },
+        {
+            title: 'Total Students',
+            value: stats.totalStudents,
+            description: 'Registered students',
+            icon: Users,
+            color: 'text-green-600',
+            bgColor: 'bg-green-100',
+            href: '/admin/enrollments',
+        },
+        {
+            title: 'Total Enrollments',
+            value: stats.totalEnrollments,
+            description: 'Course enrollments',
+            icon: TrendingUp,
+            color: 'text-purple-600',
+            bgColor: 'bg-purple-100',
+            href: '/admin/enrollments',
+        },
+        {
+            title: 'Total Assignments',
+            value: stats.totalAssignments,
+            description: 'Assignments created',
+            icon: ClipboardList,
+            color: 'text-orange-600',
+            bgColor: 'bg-orange-100',
+            href: '/admin/assignments',
+        },
+    ];
+
+    const quickActions = [
+        {
+            title: 'Create Course',
+            description: 'Add a new course to the platform',
+            icon: BookOpen,
+            href: '/admin/courses/create',
+        },
+        {
+            title: 'View Enrollments',
+            description: 'Manage student enrollments',
+            icon: Users,
+            href: '/admin/enrollments',
+        },
+        {
+            title: 'Manage Assignments',
+            description: 'Create and review assignments',
+            icon: ClipboardList,
+            href: '/admin/assignments',
+        },
+    ];
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-[400px]">
+                <LoadingSpinner size="lg" text="Loading dashboard..." />
+            </div>
+        );
+    }
 
     return (
-        <div className="min-h-screen bg-background">
-            <div className="container mx-auto px-4 py-8">
-                {/* Header */}
-                <div className="flex items-center justify-between mb-8">
-                    <div>
-                        <h1 className="text-3xl md:text-4xl font-bold mb-2">Admin Dashboard</h1>
-                        <p className="text-muted-foreground">
-                            Manage your courses and track performance
-                        </p>
-                    </div>
-                    <Button
-                        onClick={() => router.push('/admin/courses/create')}
-                        className="gap-2"
-                    >
-                        <Plus className="size-4" />
-                        Create Course
-                    </Button>
+        <div className="flex-1 p-4 md:p-6 lg:p-8">
+            <div className="max-w-7xl mx-auto space-y-8">
+                {/* Welcome Section */}
+                <div className="space-y-1">
+                    <h1 className="text-2xl md:text-3xl font-bold">Admin Dashboard</h1>
+                    <p className="text-sm md:text-base text-muted-foreground">
+                        Manage courses, students, and assignments from one place
+                    </p>
                 </div>
 
-                {/* Stats */}
-                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Total Courses</CardTitle>
-                            <BookOpen className="size-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">{courses.length}</div>
-                            <p className="text-xs text-muted-foreground">
-                                Active courses on platform
-                            </p>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Total Enrollments</CardTitle>
-                            <Users className="size-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">{totalEnrollments}</div>
-                            <p className="text-xs text-muted-foreground">
-                                Students enrolled
-                            </p>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Average Price</CardTitle>
-                            <TrendingUp className="size-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">${averagePrice.toFixed(2)}</div>
-                            <p className="text-xs text-muted-foreground">
-                                Per course
-                            </p>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Categories</CardTitle>
-                            <BookOpen className="size-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">
-                                {new Set(courses.map(c => c.category)).size}
-                            </div>
-                            <p className="text-xs text-muted-foreground">
-                                Unique categories
-                            </p>
-                        </CardContent>
-                    </Card>
+                {/* Stats Cards */}
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                    {statCards.map((stat) => (
+                        <Card
+                            key={stat.title}
+                            className="cursor-pointer hover:shadow-lg transition-all hover:scale-[1.02]"
+                            onClick={() => router.push(stat.href)}
+                        >
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
+                                <div className={`p-2 rounded-lg ${stat.bgColor}`}>
+                                    <stat.icon className={`h-4 w-4 ${stat.color}`} />
+                                </div>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">{stat.value}</div>
+                                <p className="text-xs text-muted-foreground mt-1">{stat.description}</p>
+                            </CardContent>
+                        </Card>
+                    ))}
                 </div>
 
                 {/* Quick Actions */}
-                <div className="grid md:grid-cols-2 gap-6">
-                    <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => router.push('/admin/courses')}>
-                        <CardHeader>
-                            <CardTitle>Manage Courses</CardTitle>
-                            <CardDescription>
-                                View, edit, and delete existing courses
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <Button variant="outline" className="w-full">
-                                View All Courses
-                            </Button>
-                        </CardContent>
-                    </Card>
+                <div className="space-y-4">
+                    <h2 className="text-xl md:text-2xl font-bold">Quick Actions</h2>
+                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                        {quickActions.map((action) => (
+                            <Card
+                                key={action.title}
+                                className="cursor-pointer hover:shadow-lg transition-all hover:scale-[1.02]"
+                                onClick={() => router.push(action.href)}
+                            >
+                                <CardHeader className="pb-3">
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 rounded-lg bg-primary/10">
+                                            <action.icon className="h-5 w-5 text-primary" />
+                                        </div>
+                                        <div className="flex-1">
+                                            <CardTitle className="text-base">{action.title}</CardTitle>
+                                            <CardDescription className="text-xs mt-1">{action.description}</CardDescription>
+                                        </div>
+                                    </div>
+                                </CardHeader>
+                            </Card>
+                        ))}
+                    </div>
+                </div>
 
-                    <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => router.push('/admin/courses/create')}>
-                        <CardHeader>
-                            <CardTitle>Create New Course</CardTitle>
-                            <CardDescription>
-                                Add a new course to the platform
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <Button className="w-full gap-2">
-                                <Plus className="size-4" />
-                                Create Course
-                            </Button>
+                {/* Recent Activity Section - Placeholder */}
+                <div className="space-y-4">
+                    <h2 className="text-xl md:text-2xl font-bold">Recent Activity</h2>
+                    <Card>
+                        <CardContent className="py-12">
+                            <p className="text-center text-muted-foreground">
+                                No recent activity to display
+                            </p>
                         </CardContent>
                     </Card>
                 </div>

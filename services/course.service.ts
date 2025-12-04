@@ -27,7 +27,7 @@ export const getAllCourses = async (
     if (filters?.limit) params.append('limit', filters.limit.toString());
 
     const response = await api.get<PaginatedResponse<Course>>(
-        `/api/courses?${params.toString()}`
+        `/courses?${params.toString()}`
     );
     return response.data;
 };
@@ -36,7 +36,7 @@ export const getAllCourses = async (
  * Get course by ID
  */
 export const getCourseById = async (id: string): Promise<{ course: Course }> => {
-    const response = await api.get<{ course: Course }>(`/api/courses/${id}`);
+    const response = await api.get<{ course: Course }>(`/courses/${id}`);
     return response.data;
 };
 
@@ -47,7 +47,7 @@ export const createCourse = async (
     data: CourseFormData
 ): Promise<{ message: string; course: Course }> => {
     const response = await api.post<{ message: string; course: Course }>(
-        '/api/courses/admin/create',
+        '/courses/admin/create',
         data
     );
     return response.data;
@@ -61,7 +61,7 @@ export const updateCourse = async (
     data: Partial<CourseFormData>
 ): Promise<{ message: string; course: Course }> => {
     const response = await api.put<{ message: string; course: Course }>(
-        `/api/courses/admin/${id}`,
+        `/courses/admin/${id}`,
         data
     );
     return response.data;
@@ -72,7 +72,7 @@ export const updateCourse = async (
  */
 export const deleteCourse = async (id: string): Promise<{ message: string }> => {
     const response = await api.delete<{ message: string }>(
-        `/api/courses/admin/${id}`
+        `/courses/admin/${id}`
     );
     return response.data;
 };

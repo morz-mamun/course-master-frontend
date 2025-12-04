@@ -1,9 +1,12 @@
+"use client"
+
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CourseProvider } from "@/contexts/CourseContext";
 import Navbar from "@/components/Navbar";
+import { usePathname } from "next/navigation";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,10 +18,17 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Course Master - Learn Anything, Anywhere",
-  description: "A comprehensive Learning Management System for students and educators",
-};
+function LayoutContent({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const isAdminRoute = pathname?.startsWith('/admin');
+
+  return (
+    <>
+      {!isAdminRoute && <Navbar />}
+      <main>{children}</main>
+    </>
+  );
+}
 
 export default function RootLayout({
   children,
@@ -32,8 +42,7 @@ export default function RootLayout({
       >
         <AuthProvider>
           <CourseProvider>
-            <Navbar />
-            <main>{children}</main>
+            <LayoutContent>{children}</LayoutContent>
           </CourseProvider>
         </AuthProvider>
       </body>
