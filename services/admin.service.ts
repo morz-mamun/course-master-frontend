@@ -16,7 +16,6 @@ class AdminService {
     async getDashboardStats(): Promise<DashboardStats> {
         try {
             const response = await api.get<DashboardStats>('/admin/stats');
-            console.log('admin stats', response.data);
             return response.data;
         } catch (error) {
             console.error('Error fetching dashboard stats:', error);

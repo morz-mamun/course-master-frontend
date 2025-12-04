@@ -20,7 +20,7 @@ export const enrollInCourse = async (
     data: EnrollmentFormData
 ): Promise<{ message: string; enrollment: Enrollment }> => {
     const response = await api.post<{ message: string; enrollment: Enrollment }>(
-        '/enroll',
+        '/student/enroll',
         data
     );
     return response.data;
@@ -41,7 +41,7 @@ export const updateProgress = async (
     data: ProgressUpdateData
 ): Promise<{ message: string; progress: Progress }> => {
     const response = await api.post<{ message: string; progress: Progress }>(
-        '/progress',
+        '/student/progress',
         data
     );
     return response.data;
@@ -54,7 +54,7 @@ export const submitAssignment = async (
     data: AssignmentSubmissionData
 ): Promise<{ message: string; submission: any }> => {
     const response = await api.post<{ message: string; submission: any }>(
-        '/assignments',
+        '/student/assignments',
         data
     );
     return response.data;
@@ -76,7 +76,7 @@ export const submitQuiz = async (
         attempt: any;
         passed: boolean;
         passingScore: number;
-    }>('/quiz/submit', data);
+    }>('/student/quiz/submit', data);
     return response.data;
 };
 
@@ -100,9 +100,7 @@ export const getAllSubmissions = async (): Promise<{ submissions: any[] }> => {
  * Get materials for a specific lesson
  */
 export const getLessonMaterials = async (courseId: string, lessonId: string): Promise<{ assignments: any[], quizzes: any[] }> => {
-    console.log(`🔍 Frontend calling: /materials with courseId=${courseId}, lessonId=${lessonId}`);
-    console.log(`🔍 Base URL: ${api.defaults.baseURL}`);
-    const response = await api.get<{ assignments: any[], quizzes: any[] }>(`/materials`, {
+    const response = await api.get<{ assignments: any[], quizzes: any[] }>(`/student/materials`, {
         params: { courseId, lessonId }
     });
     return response.data;
