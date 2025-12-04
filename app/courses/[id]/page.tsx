@@ -9,7 +9,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useCourses } from '@/contexts/CourseContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { enrollInCourse } from '@/services/student.service';
+import { enrollInCourse, getEnrolledCourses } from '@/services/student.service';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -28,10 +28,26 @@ export default function CourseDetailsPage() {
     const [selectedBatch, setSelectedBatch] = useState('');
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [isEnrolled, setIsEnrolled] = useState(false);
 
     useEffect(() => {
         loadCourse();
-    }, [params.id]);
+        if (isAuthenticated && isStudent) {
+            checkEnrollmentStatus();
+        }
+    }, [params.id, isAuthenticated, isStudent]);
+
+    const checkEnrollmentStatus = async () => {
+        try {
+            const { courses } = await getEnrolledCourses();
+            const enrolled = courses.some((enrollment: any) =>
+                enrollment.courseId._id === params.id || enrollment.courseId === params.id
+            );
+            setIsEnrolled(enrolled);
+        } catch (err) {
+            console.error('Failed to check enrollment status:', err);
+        }
+    };
 
     const loadCourse = async () => {
         try {
@@ -105,25 +121,25 @@ export default function CourseDetailsPage() {
                     {/* Main Content */}
                     <div className="lg:col-span-2 space-y-6">
                         <div>
-                            <Badge className="mb-4 capitalize">{course.category}</Badge>
-                            <h1 className="text-3xl md:text-4xl font-bold mb-4">{course.title}</h1>
-                            <p className="text-lg text-muted-foreground">{course.description}</p>
+                            <Badge className="mb-4 capitalize">{course?.category}</Badge>
+                            <h1 className="text-3xl md:text-4xl font-bold mb-4">{course?.title}</h1>
+                            <p className="text-lg text-muted-foreground">{course?.description}</p>
                         </div>
 
                         <div className="flex flex-wrap gap-4">
                             <div className="flex items-center gap-2 text-sm">
                                 <Users className="size-4 text-muted-foreground" />
-                                <span>{course.enrollmentCount} students enrolled</span>
+                                <span>{course?.enrollmentCount} students enrolled</span>
                             </div>
                             <div className="flex items-center gap-2 text-sm">
                                 <Clock className="size-4 text-muted-foreground" />
-                                <span>{course.syllabus.length} lessons</span>
+                                <span>{course?.syllabus.length} lessons</span>
                             </div>
                         </div>
 
                         {/* Tags */}
                         <div className="flex flex-wrap gap-2">
-                            {course.tags.map((tag) => (
+                            {course?.tags.map((tag) => (
                                 <Badge key={tag} variant="outline">{tag}</Badge>
                             ))}
                         </div>
@@ -133,24 +149,24 @@ export default function CourseDetailsPage() {
                             <CardHeader>
                                 <CardTitle>Course Syllabus</CardTitle>
                                 <CardDescription>
-                                    {course.syllabus.length} lessons in this course
+                                    {course?.syllabus.length} lessons in this course
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <div className="space-y-3">
-                                    {course.syllabus.map((lesson, index) => (
+                                    {course?.syllabus.map((lesson, index) => (
                                         <div key={lesson.lessonId} className="flex items-start gap-3 p-3 rounded-lg border">
                                             <div className="size-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                                                 <span className="text-sm font-semibold text-primary">{index + 1}</span>
                                             </div>
                                             <div className="flex-1">
-                                                <h4 className="font-medium">{lesson.title}</h4>
-                                                {lesson.description && (
-                                                    <p className="text-sm text-muted-foreground mt-1">{lesson.description}</p>
+                                                <h4 className="font-medium">{lesson?.title}</h4>
+                                                {lesson?.description && (
+                                                    <p className="text-sm text-muted-foreground mt-1">{lesson?.description}</p>
                                                 )}
                                                 <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
                                                     <Clock className="size-3" />
-                                                    <span>{lesson.duration} minutes</span>
+                                                    <span>{lesson?.duration} minutes</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -167,7 +183,7 @@ export default function CourseDetailsPage() {
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="flex items-center gap-2 text-3xl font-bold">
                                         <DollarSign className="size-6" />
-                                        {course.price.toFixed(2)}
+                                        {course?.price.toFixed(2)}
                                     </div>
                                 </div>
                                 <CardTitle>Enroll in this course</CardTitle>
@@ -186,36 +202,46 @@ export default function CourseDetailsPage() {
                                     </div>
                                 )}
 
-                                {course.batches.length > 0 ? (
+                                {course?.batches?.length > 0 ? (
                                     <>
-                                        <div className="space-y-2">
-                                            <label className="text-sm font-medium">Select Batch</label>
-                                            <select
-                                                value={selectedBatch}
-                                                onChange={(e) => setSelectedBatch(e.target.value)}
-                                                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                                            >
-                                                {course.batches.map((batch) => (
-                                                    <option key={batch.batchId} value={batch.batchId}>
-                                                        {new Date(batch.startDate).toLocaleDateString()} - {new Date(batch.endDate).toLocaleDateString()}
-                                                        {batch.enrolledCount !== undefined && ` (${batch.capacity - batch.enrolledCount} spots left)`}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </div>
+                                        {isEnrolled ? (
+                                            <div className="bg-green-500/10 text-green-600 dark:text-green-400 text-sm p-3 rounded-md border border-green-500/20 flex items-center gap-2">
+                                                <CheckCircle2 className="size-4" />
+                                                You are already enrolled in this course
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <div className="space-y-2">
+                                                    <label className="text-sm font-medium">Select Batch</label>
+                                                    <select
+                                                        value={selectedBatch}
+                                                        onChange={(e) => setSelectedBatch(e.target.value)}
+                                                        className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring capitalize"
+                                                    >
+                                                        {course?.batches?.map((batch) => (
+                                                            <option key={batch.batchId} value={batch.batchId} className='space-x-2 capitalize'>
+                                                                {`${batch?.batchId}${batch?.enrolledCount !== undefined && `(${batch?.capacity - batch?.enrolledCount} spots left) : `}`}
+                                                                {new Date(batch?.startDate).toLocaleDateString()} - {new Date(batch?.endDate).toLocaleDateString()}
 
-                                        <Button
-                                            className="w-full"
-                                            onClick={handleEnroll}
-                                            disabled={enrolling || !isStudent}
-                                        >
-                                            {enrolling ? 'Enrolling...' : 'Enroll Now'}
-                                        </Button>
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                </div>
 
-                                        {!isAuthenticated && (
-                                            <p className="text-xs text-center text-muted-foreground">
-                                                Please login to enroll
-                                            </p>
+                                                <Button
+                                                    className="w-full"
+                                                    onClick={handleEnroll}
+                                                    disabled={enrolling || !isStudent || isEnrolled}
+                                                >
+                                                    {enrolling ? 'Enrolling...' : 'Enroll Now'}
+                                                </Button>
+
+                                                {!isAuthenticated && (
+                                                    <p className="text-xs text-center text-muted-foreground">
+                                                        Please login to enroll
+                                                    </p>
+                                                )}
+                                            </>
                                         )}
                                     </>
                                 ) : (
