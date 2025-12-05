@@ -12,7 +12,7 @@ import type { User, LoginFormData, RegisterFormData } from '@/lib/types';
 interface AuthContextType {
     user: User | null;
     loading: boolean;
-    login: (data: LoginFormData) => Promise<void>;
+    login: (data: LoginFormData) => Promise<User>;
     register: (data: RegisterFormData) => Promise<void>;
     logout: () => Promise<void>;
     isAuthenticated: boolean;
@@ -46,6 +46,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const login = async (data: LoginFormData) => {
         const response = await loginService(data);
         setUser(response.user);
+        return response.user;
     };
 
     const register = async (data: RegisterFormData) => {

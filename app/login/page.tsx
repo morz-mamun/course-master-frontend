@@ -42,8 +42,14 @@ export default function LoginPage() {
         setLoading(true);
 
         try {
-            await login(formData);
-            // Redirect will happen via useEffect
+            const user = await login(formData);
+
+            // Redirect immediately based on user role
+            if (user.role === 'admin') {
+                router.push('/admin/dashboard');
+            } else {
+                router.push('/dashboard');
+            }
         } catch (err: any) {
             setError(err.response?.data?.error || 'Login failed. Please check your credentials.');
         } finally {
