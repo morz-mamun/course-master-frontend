@@ -12,7 +12,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
-import { GraduationCap, Loader2 } from 'lucide-react';
+import { GraduationCap, Loader2, Eye, EyeOff } from 'lucide-react';
 import type { UserRole } from '@/lib/types';
 
 export default function RegisterPage() {
@@ -27,6 +27,8 @@ export default function RegisterPage() {
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     // Redirect if already authenticated
     React.useEffect(() => {
@@ -78,7 +80,7 @@ export default function RegisterPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-primary/10 p-4">
+        <div className="min-h-[calc(100vh-65px)] flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-primary/10 p-4">
             <Card className="w-full max-w-md">
                 <CardHeader className="space-y-1 text-center">
                     <div className="flex justify-center mb-4">
@@ -136,37 +138,67 @@ export default function RegisterPage() {
                             <label htmlFor="password" className="text-sm font-medium">
                                 Password
                             </label>
-                            <Input
-                                id="password"
-                                name="password"
-                                type="password"
-                                placeholder="••••••••"
-                                value={formData.password}
-                                onChange={handleChange}
-                                required
-                                disabled={loading}
-                                minLength={6}
-                            />
+                            <div className="relative">
+                                <Input
+                                    id="password"
+                                    name="password"
+                                    type={showPassword ? "text" : "password"}
+                                    placeholder="••••••••"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    required
+                                    disabled={loading}
+                                    minLength={6}
+                                    className="pr-10"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                                    disabled={loading}
+                                >
+                                    {showPassword ? (
+                                        <EyeOff className="size-4" />
+                                    ) : (
+                                        <Eye className="size-4" />
+                                    )}
+                                </button>
+                            </div>
                         </div>
 
                         <div className="space-y-2">
                             <label htmlFor="confirmPassword" className="text-sm font-medium">
                                 Confirm Password
                             </label>
-                            <Input
-                                id="confirmPassword"
-                                name="confirmPassword"
-                                type="password"
-                                placeholder="••••••••"
-                                value={formData.confirmPassword}
-                                onChange={handleChange}
-                                required
-                                disabled={loading}
-                                minLength={6}
-                            />
+                            <div className="relative">
+                                <Input
+                                    id="confirmPassword"
+                                    name="confirmPassword"
+                                    type={showConfirmPassword ? "text" : "password"}
+                                    placeholder="••••••••"
+                                    value={formData.confirmPassword}
+                                    onChange={handleChange}
+                                    required
+                                    disabled={loading}
+                                    minLength={6}
+                                    className="pr-10"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                                    disabled={loading}
+                                >
+                                    {showConfirmPassword ? (
+                                        <EyeOff className="size-4" />
+                                    ) : (
+                                        <Eye className="size-4" />
+                                    )}
+                                </button>
+                            </div>
                         </div>
 
-                        <div className="space-y-2">
+                        <div className="space-y-2 mb-4">
                             <label htmlFor="role" className="text-sm font-medium">
                                 I am a
                             </label>
@@ -179,7 +211,7 @@ export default function RegisterPage() {
                                 disabled={loading}
                             >
                                 <option value="student">Student</option>
-                                <option value="admin">Admin</option>
+                                {/* <option value="admin">Admin</option> */}
                             </select>
                         </div>
                     </CardContent>

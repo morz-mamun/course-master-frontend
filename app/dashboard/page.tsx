@@ -90,17 +90,14 @@ function DashboardContent() {
 
     return (
         <div className="bg-background">
-            <header className="sticky top-0 z-50 w-full border-b border-border bg-card">
-                <div className="container mx-auto flex h-16 items-center justify-between px-4">
-                    <div className="flex items-center gap-6">
-                        <div className="flex flex-col">
-                            <h2 className="text-xl font-bold">Student Dashboard</h2>
-                            <p>
-                                <span> Welcome back, {user?.name}! 👋</span>
-                                <span>Continue your learning journey and track your progress</span>
-                            </p>
-                        </div>
-                    </div>
+            <header className="container mx-auto bg-card mt-6">
+                <div className="px-3">
+                    <h1 className="text-3xl md:text-4xl font-bold mb-2">Student Dashboard</h1>
+                    <p className="text-muted-foreground">
+                        <span> Welcome back! {user?.name}! 👋</span>
+                        <br />
+                        <span>Track your progress and manage your courses from one place.</span>
+                    </p>
                 </div>
             </header>
 

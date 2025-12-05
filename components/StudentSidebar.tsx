@@ -29,7 +29,6 @@ import {
     SidebarRail,
     SidebarSeparator,
 } from '@/components/ui/sidebar';
-import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 
 const navigationItems = [
@@ -81,7 +80,10 @@ export function StudentSidebar() {
                     <SidebarGroupContent>
                         <SidebarMenu>
                             {navigationItems.map((item) => {
-                                const isActive = pathname === item.href || pathname?.startsWith(item.href + '/');
+                                // Special handling for Dashboard - only active on exact match or /dashboard/learn
+                                const isActive = item.href === '/dashboard'
+                                    ? pathname === '/dashboard' || pathname?.startsWith('/dashboard/learn')
+                                    : pathname === item.href || pathname?.startsWith(item.href + '/');
                                 return (
                                     <SidebarMenuItem key={item.href}>
                                         <SidebarMenuButton asChild isActive={isActive} tooltip={item.title}>

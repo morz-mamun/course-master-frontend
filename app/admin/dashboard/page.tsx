@@ -13,6 +13,7 @@ import { BookOpen, Users, ClipboardList, TrendingUp, Plus, Search } from 'lucide
 import { useRouter } from 'next/navigation';
 import { adminService } from '@/services/admin.service';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface DashboardStats {
     totalCourses: number;
@@ -23,6 +24,7 @@ interface DashboardStats {
 
 function AdminDashboardContent() {
     const router = useRouter();
+    const { user } = useAuth();
     const [stats, setStats] = useState<DashboardStats>({
         totalCourses: 0,
         totalStudents: 0,
@@ -129,7 +131,9 @@ function AdminDashboardContent() {
                 <div className="px-3">
                     <h1 className="text-3xl md:text-4xl font-bold mb-2">Admin Dashboard</h1>
                     <p className="text-muted-foreground">
-                        Welcome back! Manage courses, students, and assignments from one place.
+                        <span> Welcome back! {user?.name}! 👋</span>
+                        <br />
+                        <span>Manage courses, students, and assignments from one place.</span>
                     </p>
                 </div>
             </header>
