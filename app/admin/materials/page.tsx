@@ -87,7 +87,7 @@ export default function AdminMaterialsPage() {
                             }
                         }}
                     >
-                        <SelectTrigger>
+                        <SelectTrigger className="w-full">
                             <SelectValue placeholder="Choose a course" />
                         </SelectTrigger>
                         <SelectContent>
@@ -110,7 +110,7 @@ export default function AdminMaterialsPage() {
                         }}
                         disabled={!selectedCourse || loadingCourse}
                     >
-                        <SelectTrigger>
+                        <SelectTrigger className="w-full">
                             <SelectValue placeholder={loadingCourse ? "Loading lessons..." : "Choose a lesson"} />
                         </SelectTrigger>
                         <SelectContent>
