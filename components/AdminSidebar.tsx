@@ -16,6 +16,7 @@ import {
     FileText,
     LogOut,
     User,
+    BarChart3,
 } from 'lucide-react';
 import {
     Sidebar,
@@ -39,6 +40,11 @@ const navigationItems = [
         title: 'Dashboard',
         href: '/admin/dashboard',
         icon: LayoutDashboard,
+    },
+    {
+        title: 'Analytics',
+        href: '/admin/analytics',
+        icon: BarChart3,
     },
     {
         title: 'Courses',

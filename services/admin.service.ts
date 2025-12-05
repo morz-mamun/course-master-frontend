@@ -76,6 +76,22 @@ class AdminService {
         const response = await api.get(`/admin/quizzes/${courseId}/${lessonId}`);
         return response.data;
     }
+
+    async getEnrollmentAnalytics(startDate?: string, endDate?: string): Promise<{
+        data: Array<{ date: string; count: number }>;
+        summary: {
+            totalEnrollments: number;
+            averagePerDay: number;
+            dateRange: { start: string; end: string };
+        };
+    }> {
+        const params = new URLSearchParams();
+        if (startDate) params.append('startDate', startDate);
+        if (endDate) params.append('endDate', endDate);
+
+        const response = await api.get(`/admin/analytics/enrollments?${params.toString()}`);
+        return response.data;
+    }
 }
 
 export const adminService = new AdminService();
