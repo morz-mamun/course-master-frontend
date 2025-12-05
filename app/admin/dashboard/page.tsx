@@ -126,14 +126,14 @@ function AdminDashboardContent() {
     return (
         <div className="bg-background">
             <header className="container mx-auto bg-card mt-6">
-                <div className="lg:px-0 px-3">
+                <div className="px-3">
                     <h1 className="text-3xl md:text-4xl font-bold mb-2">Admin Dashboard</h1>
                     <p className="text-muted-foreground">
                         Welcome back! Manage courses, students, and assignments from one place.
                     </p>
                 </div>
             </header>
-            <main className="container mx-auto lg:px-0 px-4 py-8 space-y-8">
+            <main className="container mx-auto px-4 py-8 space-y-8">
                 {/* Stats Cards */}
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     {statCards.map((stat) => (
@@ -142,13 +142,13 @@ function AdminDashboardContent() {
                             className="cursor-pointer hover:shadow-lg transition-all hover:scale-[1.02]"
                             onClick={() => router.push(stat.href)}
                         >
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-3">
                                 <CardTitle className="text-sm font-medium">{stat?.title}</CardTitle>
                                 <div className={`p-2 rounded-lg ${stat?.bgColor}`}>
                                     <stat.icon className={`h-4 w-4 ${stat?.color}`} />
                                 </div>
                             </CardHeader>
-                            <CardContent>
+                            <CardContent className="px-3">
                                 <div className="text-2xl font-bold">{stat?.value}</div>
                                 <p className="text-xs text-muted-foreground mt-1">{stat?.description}</p>
                             </CardContent>
@@ -165,7 +165,7 @@ function AdminDashboardContent() {
                                 className="cursor-pointer hover:shadow-lg transition-all hover:scale-[1.02]"
                                 onClick={() => router.push(action.href)}
                             >
-                                <CardHeader className="pb-3">
+                                <CardHeader className="">
                                     <div className="flex items-center gap-3">
                                         <div className="p-2 rounded-lg bg-primary/10">
                                             <action.icon className="h-5 w-5 text-primary" />
