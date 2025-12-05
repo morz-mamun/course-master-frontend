@@ -39,7 +39,7 @@ function AdminAssignmentsContent() {
     }, []);
 
     return (
-        <div className="p-6">
+        <div className="container mx-auto px-4 py-8">
             <div className="mb-8">
                 <h1 className="text-3xl font-bold mb-2">Assignment Review</h1>
                 <p className="text-muted-foreground">
@@ -61,7 +61,7 @@ function AdminAssignmentsContent() {
                 <div className="grid gap-6">
                     {submissions.map((submission) => (
                         <Card key={submission._id}>
-                            <CardHeader>
+                            <CardHeader className="px-3">
                                 <div className="flex items-start justify-between gap-4">
                                     <div>
                                         <CardTitle className="text-lg">{submission.assignmentTitle}</CardTitle>
@@ -74,7 +74,7 @@ function AdminAssignmentsContent() {
                                     </Badge>
                                 </div>
                             </CardHeader>
-                            <CardContent>
+                            <CardContent className="px-3">
                                 <div className="grid md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
                                         <div className="text-sm font-medium text-muted-foreground">Student</div>

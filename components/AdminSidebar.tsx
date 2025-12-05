@@ -101,10 +101,10 @@ export default function AdminSidebar() {
                                 const isActive = pathname === item.href || pathname?.startsWith(item.href + '/');
                                 return (
                                     <SidebarMenuItem key={item.href}>
-                                        <SidebarMenuButton asChild isActive={isActive} tooltip={item.title}>
+                                        <SidebarMenuButton asChild isActive={isActive} tooltip={item?.title}>
                                             <Link href={item.href}>
                                                 <item.icon />
-                                                <span>{item.title}</span>
+                                                <span>{item?.title}</span>
                                             </Link>
                                         </SidebarMenuButton>
                                     </SidebarMenuItem>
