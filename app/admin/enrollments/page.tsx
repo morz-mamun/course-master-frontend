@@ -22,6 +22,8 @@ import {
 import LoadingSpinner from '@/components/LoadingSpinner';
 import EmptyState from '@/components/EmptyState';
 import { Users, Calendar, Filter } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 function AdminEnrollmentsContent() {
     const [enrollments, setEnrollments] = useState<any[]>([]);
@@ -86,6 +88,17 @@ function AdminEnrollmentsContent() {
                     description={enrollments.length === 0
                         ? "Students will appear here once they enroll in courses"
                         : "Try adjusting your filters"}
+                    action={
+                        <Button
+                            asChild
+                            variant="outline"
+                            className="flex items-center gap-2"
+                        >
+                            <Link href="/admin/enrollments">
+                                Add Enrollment
+                            </Link>
+                        </Button>
+                    }
                 />
             ) : (
                 <Card>

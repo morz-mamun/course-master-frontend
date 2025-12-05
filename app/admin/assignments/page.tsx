@@ -18,6 +18,7 @@ import { Label } from '@/components/ui/label';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import EmptyState from '@/components/EmptyState';
 import { FileText, ExternalLink, Calendar, CheckCircle } from 'lucide-react';
+import Link from 'next/link';
 
 function AdminAssignmentsContent() {
     const [submissions, setSubmissions] = useState<any[]>([]);
@@ -56,6 +57,17 @@ function AdminAssignmentsContent() {
                     icon={<FileText className="size-16" />}
                     title="No submissions yet"
                     description="Student submissions will appear here"
+                    action={
+                        <Button
+                            asChild
+                            variant="outline"
+                            className="flex items-center gap-2"
+                        >
+                            <Link href="/admin/assignments">
+                                Add Assignment
+                            </Link>
+                        </Button>
+                    }
                 />
             ) : (
                 <div className="grid gap-6">

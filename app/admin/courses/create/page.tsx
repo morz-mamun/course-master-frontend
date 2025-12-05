@@ -205,30 +205,42 @@ function CreateCourseContent() {
                                         )}
                                     </div>
 
-                                    <Input
-                                        placeholder="Lesson title"
-                                        value={lesson.title}
-                                        onChange={(e) => updateLesson(index, 'title', e.target.value)}
-                                    />
+                                    <div>
+                                        <label className="text-sm font-medium mb-2 block">Lesson Title</label>
+                                        <Input
+                                            placeholder="e.g., Introduction to React Hooks"
+                                            value={lesson.title}
+                                            onChange={(e) => updateLesson(index, 'title', e.target.value)}
+                                        />
+                                    </div>
 
-                                    <Input
-                                        placeholder="Description"
-                                        value={lesson.description}
-                                        onChange={(e) => updateLesson(index, 'description', e.target.value)}
-                                    />
+                                    <div>
+                                        <label className="text-sm font-medium mb-2 block">Description</label>
+                                        <Input
+                                            placeholder="Brief description of the lesson content"
+                                            value={lesson.description}
+                                            onChange={(e) => updateLesson(index, 'description', e.target.value)}
+                                        />
+                                    </div>
 
                                     <div className="grid sm:grid-cols-2 gap-3">
-                                        <Input
-                                            type="number"
-                                            placeholder="Duration (minutes)"
-                                            value={lesson.duration}
-                                            onChange={(e) => updateLesson(index, 'duration', parseInt(e.target.value))}
-                                        />
-                                        <Input
-                                            placeholder="Video URL (optional)"
-                                            value={lesson.videoUrl}
-                                            onChange={(e) => updateLesson(index, 'videoUrl', e.target.value)}
-                                        />
+                                        <div>
+                                            <label className="text-sm font-medium mb-2 block">Duration (minutes)</label>
+                                            <Input
+                                                type="number"
+                                                placeholder="30"
+                                                value={lesson.duration}
+                                                onChange={(e) => updateLesson(index, 'duration', parseInt(e.target.value))}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="text-sm font-medium mb-2 block">Video URL</label>
+                                            <Input
+                                                placeholder="https://youtube.com/watch?v=..."
+                                                value={lesson.videoUrl}
+                                                onChange={(e) => updateLesson(index, 'videoUrl', e.target.value)}
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             ))}
