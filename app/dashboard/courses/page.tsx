@@ -15,13 +15,14 @@ import { Badge } from '@/components/ui/badge';
 import ProgressBar from '@/components/ProgressBar';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import EmptyState from '@/components/EmptyState';
-import { BookOpen, ArrowRight, GraduationCap, CheckCircle2 } from 'lucide-react';
+import { BookOpen, ArrowRight, GraduationCap, CheckCircle2, User } from 'lucide-react';
 import type { Course, Enrollment } from '@/lib/types';
 
 export default function MyCoursesPage() {
     const router = useRouter();
     const { user } = useAuth();
     const { enrolledCourses, loading, fetchEnrolledCourses } = useCourses();
+
 
     useEffect(() => {
         fetchEnrolledCourses();
@@ -75,6 +76,8 @@ export default function MyCoursesPage() {
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     {enrolledCourses.map((enrollment) => {
                         const course = getCourse(enrollment);
+                        console.log(course);
+
                         if (!course) return null;
 
                         const progress = enrollment.progress;
@@ -105,6 +108,15 @@ export default function MyCoursesPage() {
                                     <CardDescription className="h-12">
                                         {course.description.length > 120 ? course.description.slice(0, 120) + '...' : course.description || 'No description available'}
                                     </CardDescription>
+                                    <div className="flex items-center gap-1.5 text-sm text-muted-foreground mt-2">
+                                        <User className="size-4 text-black font-bold" />
+                                        Instructor Name:
+                                        <span>
+                                            {typeof course.instructor === 'string'
+                                                ? course.instructor
+                                                : course.instructor?.name || 'Unknown Instructor'}
+                                        </span>
+                                    </div>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     <div className="space-y-2">
