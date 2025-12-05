@@ -3,6 +3,7 @@
  */
 
 import axios, { AxiosError, AxiosInstance } from 'axios';
+import { tokenStorage } from './tokenStorage';
 
 // Get API URL from environment variables
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
@@ -15,16 +16,20 @@ const api: AxiosInstance = axios.create({
     headers: {
         'Content-Type': 'application/json',
     },
-    withCredentials: true, // Important: enables sending cookies with requests
 });
 
 /**
  * Request interceptor
- * Can be used to add auth tokens or modify requests
+ * Adds Bearer token from localStorage to Authorization header
  */
 api.interceptors.request.use(
     (config) => {
-        // You can add custom headers here if needed
+        const token = tokenStorage.getToken();
+
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+
         return config;
     },
     (error) => {
@@ -34,7 +39,7 @@ api.interceptors.request.use(
 
 /**
  * Response interceptor
- * Handles errors globally
+ * Handles errors globally and auto-logout on 401
  */
 api.interceptors.response.use(
     (response) => {
@@ -47,8 +52,16 @@ api.interceptors.response.use(
             const status = error.response.status;
 
             if (status === 401) {
-                // Unauthorized - could redirect to login
+                // Unauthorized - token invalid or expired
                 console.error('Unauthorized access - please login');
+
+                // Clear token and redirect to login
+                tokenStorage.removeToken();
+
+                // Only redirect if not already on login page
+                if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
+                    window.location.href = '/login';
+                }
             } else if (status === 403) {
                 // Forbidden - insufficient permissions
                 console.error('Access forbidden - insufficient permissions');
