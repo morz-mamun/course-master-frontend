@@ -40,9 +40,9 @@ function AdminCoursesContent() {
     };
 
     return (
-        <div className="p-6">
+        <div className="container mx-auto px-3 py-6">
             {/* Header */}
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-8 gap-4">
                 <div>
                     <h1 className="text-3xl md:text-4xl font-bold mb-2">Manage Courses</h1>
                     <p className="text-muted-foreground">
@@ -51,7 +51,7 @@ function AdminCoursesContent() {
                 </div>
                 <Button
                     onClick={() => router.push('/admin/courses/create')}
-                    className="gap-2"
+                    className="w-fit"
                 >
                     <Plus className="size-4" />
                     Create Course

@@ -59,7 +59,7 @@ export default function AdminMaterialsPage() {
     };
 
     return (
-        <div className="p-6">
+        <div className="container mx-auto px-4 py-8 max-w-4xl">
             <div className="mb-8">
                 <h1 className="text-3xl font-bold mb-2">Manage Lesson Materials</h1>
                 <p className="text-muted-foreground">
@@ -134,7 +134,7 @@ export default function AdminMaterialsPage() {
                     <div className="grid lg:grid-cols-2 gap-6">
                         {/* Assignments Section */}
                         <Card>
-                            <CardHeader>
+                            <CardHeader className='px-3'>
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <CardTitle className="flex items-center gap-2">
@@ -152,7 +152,7 @@ export default function AdminMaterialsPage() {
                                     />
                                 </div>
                             </CardHeader>
-                            <CardContent>
+                            <CardContent className='px-3'>
                                 {assignments.length === 0 ? (
                                     <EmptyState
                                         icon={<FileText className="size-12" />}
@@ -183,7 +183,7 @@ export default function AdminMaterialsPage() {
 
                         {/* Quizzes Section */}
                         <Card>
-                            <CardHeader>
+                            <CardHeader className='px-3'>
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <CardTitle className="flex items-center gap-2">
@@ -201,7 +201,7 @@ export default function AdminMaterialsPage() {
                                     />
                                 </div>
                             </CardHeader>
-                            <CardContent>
+                            <CardContent className='px-3'>
                                 {quizzes.length === 0 ? (
                                     <EmptyState
                                         icon={<HelpCircle className="size-12" />}

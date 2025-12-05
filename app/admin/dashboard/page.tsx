@@ -12,6 +12,7 @@ import LoadingSpinner from '@/components/LoadingSpinner';
 import { BookOpen, Users, ClipboardList, TrendingUp, Plus, Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { adminService } from '@/services/admin.service';
+import { Button } from '@/components/ui/button';
 
 interface DashboardStats {
     totalCourses: number;
@@ -124,19 +125,15 @@ function AdminDashboardContent() {
 
     return (
         <div className="bg-background">
-            <header className="sticky top-0 z-50 w-full border-b border-border bg-card">
-                <div className="container mx-auto flex h-16 items-center justify-between px-4">
-                    <div className="flex items-center gap-6">
-                        <div className="flex flex-col">
-                            <h2 className="text-xl font-bold">Admin Dashboar</h2>
-                            <p>
-                                Welcome back!  Manage courses, students, and assignments from one place.
-                            </p>
-                        </div>
-                    </div>
+            <header className="container mx-auto bg-card mt-6">
+                <div className="lg:px-0 px-3">
+                    <h1 className="text-3xl md:text-4xl font-bold mb-2">Admin Dashboard</h1>
+                    <p className="text-muted-foreground">
+                        Welcome back! Manage courses, students, and assignments from one place.
+                    </p>
                 </div>
             </header>
-            <main className="container mx-auto px-4 py-8 space-y-8">
+            <main className="container mx-auto lg:px-0 px-4 py-8 space-y-8">
                 {/* Stats Cards */}
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     {statCards.map((stat) => (

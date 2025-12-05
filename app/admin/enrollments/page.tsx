@@ -59,7 +59,7 @@ function AdminEnrollmentsContent() {
     }, [enrollments, selectedCourse, selectedBatch]);
 
     return (
-        <div className="p-6">
+        <div className="container mx-auto px-4 py-8 max-w-4xl">
             <div className="mb-8">
                 <h1 className="text-3xl font-bold mb-2">Enrollment Management</h1>
                 <p className="text-muted-foreground">

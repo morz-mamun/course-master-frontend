@@ -146,9 +146,9 @@ function EditCourseContent() {
         <div className="min-h-screen bg-background">
             <div className="container mx-auto px-4 py-8 max-w-4xl">
                 <Button
-                    variant="ghost"
+                    variant="default"
                     onClick={() => router.push('/admin/courses')}
-                    className="mb-6 gap-2"
+                    className="mb-6"
                 >
                     <ArrowLeft className="size-4" />
                     Back to Courses
@@ -170,10 +170,10 @@ function EditCourseContent() {
 
                     {/* Basic Information */}
                     <Card>
-                        <CardHeader>
+                        <CardHeader className='px-3'>
                             <CardTitle>Basic Information</CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-4">
+                        <CardContent className="space-y-4 p-3">
                             <div>
                                 <label className="text-sm font-medium mb-2 block">Course Title</label>
                                 <Input
@@ -232,14 +232,14 @@ function EditCourseContent() {
 
                     {/* Syllabus */}
                     <Card>
-                        <CardHeader className="flex flex-row items-center justify-between">
+                        <CardHeader className="flex flex-row items-center justify-between px-3">
                             <CardTitle>Syllabus</CardTitle>
                             <Button type="button" onClick={addLesson} size="sm" variant="outline" className="gap-2">
                                 <Plus className="size-4" />
                                 Add Lesson
                             </Button>
                         </CardHeader>
-                        <CardContent className="space-y-4">
+                        <CardContent className="space-y-4 px-3">
                             {syllabus.map((lesson, index) => (
                                 <div key={index} className="p-4 border rounded-lg space-y-3">
                                     <div className="flex items-center justify-between">
@@ -286,14 +286,14 @@ function EditCourseContent() {
 
                     {/* Batches */}
                     <Card>
-                        <CardHeader className="flex flex-row items-center justify-between">
+                        <CardHeader className="flex flex-row items-center justify-between px-3">
                             <CardTitle>Batches</CardTitle>
                             <Button type="button" onClick={addBatch} size="sm" variant="outline" className="gap-2">
                                 <Plus className="size-4" />
                                 Add Batch
                             </Button>
                         </CardHeader>
-                        <CardContent className="space-y-4">
+                        <CardContent className="space-y-4 px-3">
                             {batches.map((batch, index) => (
                                 <div key={index} className="p-4 border rounded-lg space-y-3">
                                     <div className="flex items-center justify-between">
